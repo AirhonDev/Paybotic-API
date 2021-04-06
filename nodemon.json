@@ -1,0 +1,20 @@
+{
+  "verbose": true,
+  "ext": "ts, js, json, yaml, yml",
+  "ignore": [
+    ".git",
+    "node_modules/**/node_modules",
+    "__tests__"
+  ],
+  "events": {
+    "restart": "npm run lint; echo '\n Prettifying...\n'; npm run prettify; echo '\nReady!\n'"
+  },
+  "watch": [
+    "src",
+    "docs",
+    ".env"
+  ],
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

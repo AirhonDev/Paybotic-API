@@ -1,0 +1,34 @@
+version: '3'
+services:
+  # bakas-container:
+  #   container_name: bakas-app
+  #   build:
+  #     context: . 
+  #     dockerfile: ./Dockerfile
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - app-name-network
+  funderprisee-mysql:
+    container_name: funderprisee-mysql
+    image: mysql:5.7
+    restart: always
+    command: --lower_case_table_names=1
+    environment:
+      MYSQL_DATABASE: 'settlementdb'
+      MYSQL_ROOT_PASSWORD: D7UDyZLzMBRFuEXVeJ
+      MYSQL_USER: settlementasdfg
+      MYSQL_ROOT_HOST: 'localhost'
+    ports: 
+      - '3366:3306'
+      # - '3365'
+    volumes:
+      - db_data:/var/lib/mysql
+    networks: 
+      - app-name-network
+
+networks:
+  app-name-network:
+
+volumes:
+  db_data:

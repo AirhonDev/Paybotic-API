@@ -1,0 +1,14 @@
+openapi: 3.0.1
+info:
+  title: Settlements API
+  description: APIs for Settlement
+  version: 1.0.0
+servers:
+- url: /api/v1
+tags:
+- name: Loanee
+  description: Loanee management endpoints
+paths:
+  $ref: ./docs/api/paths/index.yaml
+components:
+  $ref: ./docs/api/components/index.yaml

@@ -1,0 +1,8 @@
+in: query
+name: offset
+schema:
+  type: integer
+  minimum: 0
+description: >
+  Specify offset where to start returning data
+

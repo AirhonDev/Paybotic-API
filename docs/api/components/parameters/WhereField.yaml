@@ -1,0 +1,6 @@
+in: query
+name: whereField
+required: false
+schema:
+  type: string
+description: Where field to filter

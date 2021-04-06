@@ -1,0 +1,8 @@
+in: query
+name: createdEndDate
+schema:
+  type: string
+  format: date-time
+description: >
+  Created at end date <br>
+  Returns results before this date. Same format as startDate.

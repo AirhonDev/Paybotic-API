@@ -1,0 +1,3 @@
+# Keys
+CreateKeyPair:
+  $ref: ./Keys/CreateKeyPair.yaml

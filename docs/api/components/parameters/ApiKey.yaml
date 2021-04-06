@@ -1,0 +1,7 @@
+in: query
+name: apiKey
+required: false
+schema:
+  type: string
+  example: 59404ddb-4481-4f25-9d96-697b5611099e
+description: API Key for HMAC Authentication

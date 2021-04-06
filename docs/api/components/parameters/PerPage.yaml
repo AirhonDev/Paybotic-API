@@ -1,0 +1,7 @@
+in: query
+name: perPage
+schema:
+  type: integer
+  minimum: 0
+description: >
+  Limit number of results of per page

@@ -1,0 +1,7 @@
+in: query
+name: page
+schema:
+  type: integer
+  minimum: 1
+description: >
+  Current page of pagination

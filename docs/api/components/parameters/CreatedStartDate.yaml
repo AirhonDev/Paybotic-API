@@ -1,0 +1,9 @@
+in: query
+name: createdStartDate
+schema:
+  type: string
+  format: date-time
+description: >
+  Created at start date <br>
+  Returns results after this date. In ISO 8601 format <br>
+  example: **"2020-03-19T09:34:02.177Z"**

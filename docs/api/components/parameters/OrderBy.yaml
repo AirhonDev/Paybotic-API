@@ -1,0 +1,11 @@
+in: query
+name: orderBy
+schema:
+  type: string
+description: >
+  Order list by column/s in ascending or descending order <br>
+  format: column_name1 order, column_name2 order, ... <br>
+  order: **asc** or **desc** <br>
+  *order may not be provided, defaults to asc<br>
+  allowed columns: createdAt<br>
+  example: **createdAt asc, createdAt desc**

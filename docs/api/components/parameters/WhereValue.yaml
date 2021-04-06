@@ -1,0 +1,6 @@
+in: query
+name: whereValue
+required: false
+schema:
+  type: string
+description: Value of set property to filter

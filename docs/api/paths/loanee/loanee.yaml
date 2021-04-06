@@ -1,0 +1,30 @@
+get:
+  tags:
+  - Loanee
+  description: Retrieve list of loanee
+  parameters:
+      - in: query
+        name: isOperator
+        schema:
+          type: boolean
+        description: >
+          If true, filter to return only operator loanees
+          otherwise return non-operator loanees
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: >
+          Return list of users with given search value in any of these columns: <br>
+          address
+      - $ref: '#/components/parameters/WhereField'
+      - $ref: '#/components/parameters/WhereValue'
+      - $ref: '#/components/parameters/OrderBy'
+      - $ref: '#/components/parameters/PerPage'
+      - $ref: '#/components/parameters/CreatedStartDate'
+      - $ref: '#/components/parameters/CreatedEndDate'
+      - $ref: '#/components/parameters/Page'
+  responses:
+    200:
+      description: Returns all examples
+      content: {}

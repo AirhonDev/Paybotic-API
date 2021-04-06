@@ -1,0 +1,16 @@
+type: object
+required:
+  - ownerId
+properties:
+  ownerId:
+    type: string
+    description: Uuid of owner
+    example: 0b9ca335-92a8-46d8-b477-eb2ed83ac927
+  description:
+    type: string
+    description: Description of keypair
+    example: "API Key for withdrawal worker"
+  endpoints:
+    type: string
+    description: Endpoints that keypair can access
+    example: "[POST /withdrawals/callback/trx]"

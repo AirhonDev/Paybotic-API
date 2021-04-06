@@ -1,0 +1,21 @@
+# Parameters
+
+ApiKey:
+  $ref: ./ApiKey.yaml 
+
+OrderBy:
+  $ref: ./OrderBy.yaml
+PerPage:
+  $ref: ./PerPage.yaml
+Offset:
+  $ref: ./Offset.yaml
+CreatedStartDate:
+  $ref: ./CreatedStartDate.yaml
+CreatedEndDate:
+  $ref: ./CreatedEndDate.yaml
+WhereField:
+  $ref: ./WhereField.yaml
+WhereValue:
+  $ref: ./WhereValue.yaml
+Page:
+  $ref: ./Page.yaml
