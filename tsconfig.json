@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "ES2020",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "allowJs": false,
@@ -23,6 +23,8 @@
       "@logger": ["src/utilities/LoggerUtil.ts"],
       "@middlewares/*": ["src/api/middlewares/*"],
       "@services/*": ["src/services/*"],
+      "@models/*": ["src/models/*"],
+      "@types/*": ["src/types/*"],
       "@baserepository": ["src/services/BaseRepository.ts"],
       "@utilities/*": ["src/utilities/*"],
       "@responses": ["src/api/responses/index.ts"]

@@ -1,4 +1,4 @@
-const { LOANEE_TABLE } = process.env
+const { POST_TABLE } = process.env
 
 import log from '@logger'
 import {
@@ -19,19 +19,20 @@ import {
 	getSearchQuery,
 	getRangeQuery,
 } from '@utilities/RepositoryQueryUtil'
-import LoaneeRepository from '@components/posts/PostRepository'
+import PostRepository from '@components/posts/PostRepository'
+import { IPost, IPostDto } from '@models/posts/'
 
-const TAG = '[LoaneeService]'
+const TAG = '[PostService]'
 
-export default class LoaneeService {
-	private readonly _loaneeRepository: LoaneeRepository
+export default class PostService {
+	private readonly _postRepository: PostRepository
 
-	constructor({ LoaneeRepository }) {
-		this._loaneeRepository = LoaneeRepository
+	constructor({ PostRepository }) {
+		this._postRepository = PostRepository
 	}
 
-	public async retrieveListofLoanee(condition) {
-		const METHOD = '[retrieveListofLoanee]'
+	public async retrieveListofPosts(condition): Promise<any> {
+		const METHOD = '[retrieveListofPosts]'
 		log.info(`${TAG} ${METHOD}`)
 
 		const {
@@ -41,30 +42,14 @@ export default class LoaneeService {
 			perPage,
 			page,
 			orderBy,
-			createdStartDate,
-			createdEndDate,
 			...rest
 		} = condition
 
-		const loaneeCols = [
-			`${LOANEE_TABLE}.uuid`,
-			`${LOANEE_TABLE}.fundraiser_member_id`,
-			`${LOANEE_TABLE}.payment_dashboard_id`,
-			`${LOANEE_TABLE}.sila_user_handle`,
-			`${LOANEE_TABLE}.email`,
-			`${LOANEE_TABLE}.first_name`,
-			`${LOANEE_TABLE}.last_name`,
-			`${LOANEE_TABLE}.created_at`,
-		]
-
+		const postCols = [`${POST_TABLE}.uuid`, `${POST_TABLE}.created_at`]
 		const actualCols = [
-			{ table: LOANEE_TABLE, col: 'created_at', name: 'created_at' },
-			{ table: LOANEE_TABLE, col: 'email', name: 'email' },
-			{ table: LOANEE_TABLE, col: 'first_name', name: 'first_name' },
-			{ table: LOANEE_TABLE, col: 'last_name', name: 'last_name' },
+			{ table: POST_TABLE, col: 'created_at', name: 'created_at' },
 		]
 
-		const searchCols = without(loaneeCols, 'createdAt')
 		const offset = page === 1 ? 0 : (page - 1) * perPage
 		const limit = page === 1 ? perPage * page : perPage
 		const pagination = {
@@ -72,23 +57,11 @@ export default class LoaneeService {
 			offset: Number(offset) || 0,
 		}
 		const orderQuery = getOrderByQuery(orderBy, actualCols)
-		const searchQuery = getSearchQuery(
-			search ? search.trim() : null,
-			searchCols,
-			LOANEE_TABLE,
-		)
-		const createdRange = getRangeQuery(
-			createdStartDate,
-			createdEndDate,
-			'created_at',
-			LOANEE_TABLE,
-		)
-		const rangeQuery = reject([createdRange], isNil)
 
 		if (orderQuery) {
 			const hasInvalidCols = some(
 				orderQuery,
-				({ column }) => !loaneeCols.includes(column),
+				({ column }) => !postCols.includes(column),
 			)
 			if (hasInvalidCols) {
 				throw new Error('Invalid column name in "orderBy"')
@@ -101,12 +74,10 @@ export default class LoaneeService {
 			const condQuery = { ...rest }
 			if (whereField && whereValue) condQuery[whereField] = whereValue
 
-			queryResult = await this._loaneeRepository.getListWithMultipleQueries(
+			queryResult = await this._postRepository.findManyByCondition(
 				condQuery,
-				orderQuery,
-				rangeQuery,
 				pagination,
-				searchQuery,
+				orderQuery,
 			)
 		} catch (DBError) {
 			log.error(`${TAG} ${DBError}`)

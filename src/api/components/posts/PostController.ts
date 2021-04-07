@@ -4,23 +4,24 @@ import log from '@logger'
 const TAG = '[LoaneeController]'
 
 export class Controller {
-	public async retrieveListofLoanee(
+	public async retrieveListofPosts(
 		req: any,
 		res: Response,
 		next: NextFunction,
 	): Promise<Response | void> {
-		const METHOD = '[retrieveListofLoanee]'
+		const METHOD = '[retrieveListofPosts]'
 		log.info(`${TAG} ${METHOD}`)
-		// const { LoaneeService } = req.container.cradle;
+		const { PostService } = req.container.cradle
 		let result
 		try {
-			// result = await LoaneeService.retrieveListofLoanee(req.query)
+			result = await PostService.retrieveListofPosts(req.query)
+			console.log('result:', result)
 		} catch (error) {
 			return next(error)
 		}
 
 		req.locals.result = result.data
-		req.locals.message = `Successfully retrived list of`
+		req.locals.message = `Successfully retrived list of posts`
 		req.locals.total = result.totalCount
 
 		return next()
