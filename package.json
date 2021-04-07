@@ -31,7 +31,7 @@
     "typescript": "~4.2.2"
   },
   "scripts": {
-    "start": "node build/src/main.js",
+    "start": "node -r ./tsconfig-paths-bootstrap.js build/src/index.js",
     "dev": "nodemon -r tsconfig-paths/register src/index.ts | pino-pretty",
     "dev:old": "nodemon src/index.ts",
     "clean": "rimraf coverage build tmp",
@@ -68,6 +68,7 @@
     "json-refs": "^3.0.15",
     "knex": "^0.95.1",
     "lodash": "^4.17.21",
+    "module-alias": "^2.2.2",
     "mysql": "^2.18.1",
     "pino": "^6.11.2",
     "swagger-ui-express": "^4.1.4",

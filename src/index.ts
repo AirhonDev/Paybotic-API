@@ -1,10 +1,12 @@
 import './env'
 
-// if (process.env.USE_MODULE_ALIASES === 'true') {
-//   require('module-alias/register');
-//   console.log('Will use module aliases')
-//   require('../module-aliases.js')()
-// }
+import setupModuleAliases from './module-aliases'
+
+if (process.env.USE_MODULE_ALIASES === 'true') {
+  require('module-alias/register');
+  console.log('Will use module aliases')
+  setupModuleAliases()
+}
 
 import Server from './server'
 import routes from './api/routes'
