@@ -1,7 +1,7 @@
 version: '3'
 services:
-  # bakas-container:
-  #   container_name: bakas-app
+  # app-container:
+  #   container_name: app-container
   #   build:
   #     context: . 
   #     dockerfile: ./Dockerfile
@@ -9,21 +9,22 @@ services:
   #     - .env
   #   networks:
   #     - app-name-network
-  funderprisee-mysql:
-    container_name: funderprisee-mysql
+  mysql:
+    container_name: app-mysql
     image: mysql:5.7
     restart: always
-    command: --lower_case_table_names=1
+    command: [--max-allowed-packet=67108864, --lower_case_table_names=1, --default-authentication-plugin=mysql_native_password]
     environment:
-      MYSQL_DATABASE: 'settlementdb'
-      MYSQL_ROOT_PASSWORD: D7UDyZLzMBRFuEXVeJ
-      MYSQL_USER: settlementasdfg
-      MYSQL_ROOT_HOST: 'localhost'
+      MYSQL_DATABASE: db
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_ROOT_HOST: localhost
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
     ports: 
-      - '3366:3306'
-      # - '3365'
-    volumes:
-      - db_data:/var/lib/mysql
+      - '3306:3306'
+    # volumes:
+    #   - db_data:/var/lib/mysql
     networks: 
       - app-name-network
 
