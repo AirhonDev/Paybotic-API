@@ -1,6 +1,6 @@
 import * as path from 'path'
 import * as fs from 'fs'
-import express, { Application } from 'express'
+import { Application } from 'express'
 import { OpenApiValidator } from 'express-openapi-validator'
 import * as swaggerUi from 'swagger-ui-express'
 import * as JSYaml from 'js-yaml'
@@ -15,7 +15,7 @@ export default async function (
 ): Promise<void> {
 	const apiRoot = JSYaml.safeLoad(
 		fs
-			.readFileSync(path.join(__dirname, '../docs/api/swagger.yaml'))
+			.readFileSync(path.resolve(__dirname + '/../docs/api/swagger.yaml'))
 			.toString(),
 	)
 	const swaggerOptions = {

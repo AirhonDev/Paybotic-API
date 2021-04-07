@@ -27,7 +27,8 @@
       "@types/*": ["src/types/*"],
       "@baserepository": ["src/services/BaseRepository.ts"],
       "@utilities/*": ["src/utilities/*"],
-      "@responses": ["src/api/responses/index.ts"]
+      "@responses": ["src/api/responses/index.ts"],
+      "@swagger": ["docs/api/swagger.yaml"]
     }
   },
   "include": [

@@ -15,7 +15,6 @@ export class Controller {
 		let result
 		try {
 			result = await PostService.retrieveListofPosts(req.query)
-			console.log('result:', result)
 		} catch (error) {
 			return next(error)
 		}

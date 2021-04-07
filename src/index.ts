@@ -3,9 +3,9 @@ import './env'
 import setupModuleAliases from './module-aliases'
 
 if (process.env.USE_MODULE_ALIASES === 'true') {
-  require('module-alias/register');
-  console.log('Will use module aliases')
-  setupModuleAliases()
+	require('module-alias/register')
+	console.log('Will use module aliases')
+	setupModuleAliases()
 }
 
 import Server from './server'
