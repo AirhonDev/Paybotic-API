@@ -1,24 +1,9 @@
 const { POST_TABLE } = process.env
 
 import log from '@logger'
-import {
-	some,
-	uniq,
-	keyBy,
-	without,
-	reject,
-	isNil,
-	isNumber,
-	omitBy,
-	omit,
-	lowerCase,
-} from 'lodash'
+import { some, transform } from 'lodash'
 
-import {
-	getOrderByQuery,
-	getSearchQuery,
-	getRangeQuery,
-} from '@utilities/RepositoryQueryUtil'
+import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import PostRepository from '@components/posts/PostRepository'
 import { IPost, IPostDto } from '@models/posts/'
 
@@ -68,16 +53,33 @@ export default class PostService {
 			}
 		}
 
+		// const populate = [
+		// 	{
+		// 		table: '<ANOTHER TABLE>',
+		// 		firstTableProp: 'uuid',
+		// 		secondTableProp: 'uuid',
+		// 		nameAs: 'namedProperty',
+		// 	},
+		// ]
+
 		let queryResult
 
 		try {
-			const condQuery = { ...rest }
+			const decoded = transform(
+				rest,
+				(result, value, key) => {
+					return (result[key] = decodeURI(decodeURIComponent(value)))
+				},
+				{},
+			)
+			const condQuery = { ...decoded }
 			if (whereField && whereValue) condQuery[whereField] = whereValue
 
 			queryResult = await this._postRepository.findManyByCondition(
 				condQuery,
 				pagination,
 				orderQuery,
+				// populate,
 			)
 		} catch (DBError) {
 			log.error(`${TAG} ${DBError}`)

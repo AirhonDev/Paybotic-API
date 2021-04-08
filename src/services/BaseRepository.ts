@@ -38,20 +38,11 @@ export default abstract class {
 		}
 	}
 
-	public async findOneByCondition(condition) {
-		try {
-			return camelize(
-				await this.manager(this.table).where(condition).select().first(),
-			)
-		} catch (SQLError) {
-			throw new Error(SQLError)
-		}
-	}
-
 	public async findManyByCondition(
 		condition?,
 		pagination?,
 		order?,
+		populate?,
 	): Promise<any> {
 		let result
 		let totalCount = null
@@ -72,7 +63,43 @@ export default abstract class {
 				})
 			}
 
-			const queryClone = query.clone()
+			let queryClone = query.clone()
+
+			if (populate && populate.length > 0) {
+				populate.forEach((value) => {
+					const firstTable = value.firstTable || this.table
+					const valTableName = value.alias
+						? `${value.table} as ${value.alias}`
+						: value.table
+					query.leftJoin(
+						valTableName,
+						`${firstTable}.${value.firstTableProp}`,
+						`${value.alias || value.table}.${value.secondTableProp}`,
+					)
+				})
+				const tablesData = await Promise.all(
+					populate.map(async (data) => ({
+						...data,
+						columns: Object.keys(await this.manager(data.table).columnInfo()),
+					})),
+				)
+				const populateData = tablesData.map(
+					({ table, nameAs, columns, alias, isMany = false }) => {
+						const columnsDetails = columns
+							.map((column) => `"${column}", ${alias || table}.${column}`)
+							.join(', ')
+						return this.manager.raw(
+							`${
+								isMany ? 'JSON_ARRAYAGG' : ''
+							}(JSON_OBJECT(${columnsDetails})) as ${nameAs}`,
+						)
+					},
+				)
+				queryClone = query.clone()
+
+				query.select([`${this.table}.*`, ...populateData])
+				// .groupBy(`${this.table}.uuid`)
+			}
 
 			if (
 				pagination &&
@@ -88,8 +115,11 @@ export default abstract class {
 				const finalOffset = counts.length <= offset ? 0 : offset
 				query.limit(limit || null).offset(finalOffset)
 			}
-
-			result = await query.orderBy(order)
+			if (order) {
+				result = await query.orderBy(order)
+			} else {
+				result = await query
+			}
 		} catch (SQLError) {
 			throw new Error(SQLError)
 		}

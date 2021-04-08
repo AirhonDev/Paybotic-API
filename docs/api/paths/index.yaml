@@ -1,2 +1,2 @@
-/post:
+/posts:
   $ref: ./post/post.yaml
