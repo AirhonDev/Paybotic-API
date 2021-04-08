@@ -1,2 +1,2 @@
-/loanee:
-  $ref: ./loanee/loanee.yaml
+/post:
+  $ref: ./post/post.yaml
