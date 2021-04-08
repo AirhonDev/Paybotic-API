@@ -70,16 +70,11 @@ export default class ExpressServer {
 				`API Documentation: ${process.env.APP_HOST}:${process.env.APP_PORT}/api-docs`,
 			)
 
-		const introduceAPIFlows = (): void =>
-			l.info(
-				`API Flows: ${process.env.APP_HOST}:${process.env.APP_PORT}/api-flow`,
-			)
 		installValidator(app, this.routes)
 			.then(() => {
 				http.createServer(app).listen(port, () => {
 					welcome(port)
 					introduceAPIDocumentation()
-					introduceAPIFlows()
 				})
 			})
 			.catch((e) => {
