@@ -1,0 +1,15 @@
+type: object
+required:
+  - result
+properties:
+  statusCode:
+    type: integer
+    description: Response Code
+    default: 200
+  message:
+    type: string
+    description: Response Message
+    example: OK
+  result:
+    type: object
+    description: Response result payload

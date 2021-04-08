@@ -4,6 +4,7 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
     "allowJs": false,
     "importHelpers": true,
     "alwaysStrict": true,

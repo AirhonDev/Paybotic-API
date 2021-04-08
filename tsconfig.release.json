@@ -5,7 +5,8 @@
     "outDir": "build",
     "removeComments": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*"

@@ -1,3 +1,4 @@
-# Keys
-CreateKeyPair:
-  $ref: ./Keys/CreateKeyPair.yaml
+200:
+  $ref: ./Responses/200.yaml
+201:
+  $ref: ./Responses/201.yaml

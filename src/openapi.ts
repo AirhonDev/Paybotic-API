@@ -6,6 +6,7 @@ import * as swaggerUi from 'swagger-ui-express'
 import * as JSYaml from 'js-yaml'
 import { resolveRefs, ResolvedRefsResults } from 'json-refs'
 import { OpenApiValidatorOpts } from 'express-openapi-validator/dist/framework/types'
+import * as packageJson from '../package.json'
 
 import errorHandler from './api/middlewares/error.handler'
 
@@ -32,10 +33,12 @@ export default async function (
 		apiRoot,
 		swaggerOptions,
 	)
-	const swaggerDocJSON = swaggerDoc.resolved
+	const swaggerDocJSON = swaggerDoc.resolved as any
 	// console.log('swagger doc:', swaggerDocJSON);
-	// swaggerDocJSON.info.version = '0.0.1';
-	// swaggerDocJSON.host = 3000;
+	swaggerDocJSON.info.title = packageJson.name
+	swaggerDocJSON.info.description = packageJson.description
+	swaggerDocJSON.info.version = packageJson.version
+	swaggerDocJSON.info.contact.name = packageJson.author.split(' ')[0]
 	const validateResponses = !!(
 		process.env.OPENAPI_ENABLE_RESPONSE_VALIDATION &&
 		process.env.OPENAPI_ENABLE_RESPONSE_VALIDATION.toLowerCase() === 'true'

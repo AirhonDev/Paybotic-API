@@ -9,18 +9,6 @@ ApiKeyAuth:
   type: apiKey
   in: header
   name: X-API-Key
-XPayToken:
-  type: apiKey
-  in: header
-  name: x-pay-token
-Signature:
-  type: apiKey
-  in: header
-  name: signature
-Address:
-  type: apiKey
-  in: header
-  name: address
 OpenID:
   type: openIdConnect
   openIdConnectUrl: https://example.com/.well-known/openid-configuration
