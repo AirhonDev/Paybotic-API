@@ -1,7 +1,7 @@
 {
-  "name": "openapi-node-typescript-boilerplate",
+  "name": "paybotic-api",
   "version": "0.0.0",
-  "description": "The best Typescript Best Boilerplate",
+  "description": "APIs that will house the Paybotic MCA offering",
   "engines": {
     "node": ">= 14.7 <15"
   },
