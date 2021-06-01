@@ -1,2 +1,5 @@
 /posts:
   $ref: ./post/post.yaml
+
+/merchants:
+  $ref: ./merchant/merchant.yaml

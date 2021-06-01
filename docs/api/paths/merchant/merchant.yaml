@@ -1,0 +1,22 @@
+merchant:
+  tags:
+  - Merchant
+  description: Add new merchant
+  requestBody:
+    description: Provide merchant details
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            headlines:
+              type: string
+              description: Headline of merchant
+              example: "Github is very good"
+          required:
+            - headlines
+    required: true
+  responses:
+    200:
+      description: Returns all examples
+      content: {}
