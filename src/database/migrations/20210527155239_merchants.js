@@ -16,7 +16,7 @@ exports.up = function (knex) {
     t.foreign('corporate_address_id').references('uuid').inTable(ADDRESS_TABLE)
     t.integer('business_information_id').unsigned()
     t.foreign('business_information_id').references('uuid').inTable(BUSINESS_INFORMATION_TABLE)
-    t.jsonb('business_entity')
+    t.text('business_entity')
     t.string('bank_name')
     t.string('bank_account_number')
     t.string('bank_account_rounting_number')

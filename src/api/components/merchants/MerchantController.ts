@@ -33,6 +33,7 @@ export class Controller {
 				physicalAddressId: merchantInfoResult.addressData.uuid,
 				corporateAddressId: merchantInfoResult.addressData.uuid,
 				businessInformationId: merchantInfoResult.businessInformationData.uuid,
+				businessEntity: JSON.parse(JSON.stringify(req.body.merchantInformation.businessEntity))
 			}
 
 			merchantResult = await MerchantService.storeMerchant(merchantInformation)

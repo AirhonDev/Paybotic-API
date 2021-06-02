@@ -100,17 +100,14 @@ post:
                     description: Merchant Business Name
                     example: "Sample Business Name"
                   businessEntity:
-                    type: object
+                    type: string
                     description: Merchant Business Entity
-                    example:
-                      corporation: true
-                      partnership: true
-                      limitedPartnership: true
+                    example: "{corporation: true partnership: true limitedPartnership: true}"
                   bankName:
                     type: string
                     description: Merchant Bank Name
                     example: "Sample Bank Name"
-                  BankAccountNumber:
+                  bankAccountNumber:
                     type: string
                     description: Merchant Account Number
                     example: "312312424124"
