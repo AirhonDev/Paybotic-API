@@ -4,8 +4,9 @@ import l from '@logger'
 import PostRepository from '@components/posts/PostRepository'
 import MerchantRepository from '@components/merchants/MerchantRepository'
 import AddressRepository from '@components/addresses/AddressRepository'
+import CashAdvanceApplicationRepository from '@components/cash-advance-application/CashAdvanceApplicationRepository'
 
-const REPOSITORIES = [PostRepository, MerchantRepository, AddressRepository]
+const REPOSITORIES = [PostRepository, MerchantRepository, AddressRepository, CashAdvanceApplicationRepository]
 
 export default (container: AwilixContainer): void => {
 	REPOSITORIES.forEach((service: any) => {
