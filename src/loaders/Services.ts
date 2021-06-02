@@ -4,6 +4,7 @@ import l from '@logger'
 import PostService from '@components/posts/PostService'
 import MerchantService from '@components/merchants/MerchantService'
 import CashAdvanceApplicationService from '@components/cash-advance-application/CashAdvanceApplicationService'
+// import BusinessInformationService from '@components/business-informations/BusinessInformationService'
 
 const SERVICES = [PostService, MerchantService, CashAdvanceApplicationService]
 

@@ -5,5 +5,5 @@ import Metadata from '@middlewares/metadata.list'
 
 export default express
 	.Router()
-  .post('/', Controller.createCashAdvanceApplication)
+	.post('/', Controller.createCashAdvanceApplication)
 	.get('/', Controller.retrieveListOfCashAdvanceApplications, Metadata)

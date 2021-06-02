@@ -1,5 +1,6 @@
 import { Response, NextFunction } from 'express'
 import log from '@logger'
+import { CreateSucess } from '@responses'
 
 export class Controller {
 	public async storePost(
@@ -9,20 +10,39 @@ export class Controller {
 	): Promise<Response | void> {
 		const METHOD = '[storePost]'
 		const { MerchantService } = req.container.cradle
-		let result
+		let merchantInfoResult
+		let merchantResult
 		try {
-			await MerchantService.storeMerchant(req.body)
-			console.log(req.body.firstName)
-			result = req.body.firstName
+			const addressInformation = {
+				...req.body.address,
+				createdAt: new Date(Date.now()),
+			}
+			const businessInformation = {
+				...req.body.businessInformation,
+				createdAt: new Date(Date.now()),
+			}
+
+			merchantInfoResult = await MerchantService.storeMerchantsInformation(
+				addressInformation,
+				businessInformation,
+			)
+
+			const merchantInformation = {
+				...req.body.merchantInformation,
+				createdAt: new Date(Date.now()),
+				physicalAddressId: merchantInfoResult.addressData.uuid,
+				corporateAddressId: merchantInfoResult.addressData.uuid,
+				businessInformationId: merchantInfoResult.businessInformationData.uuid,
+			}
+
+			merchantResult = await MerchantService.storeMerchant(merchantInformation)
 		} catch (error) {
 			return next(error)
 		}
 
-		req.locals.result = result
-		req.locals.message = `Successfully Created a merchant`
-		req.locals.total = 1
-
-		return next()
+		return res.send(
+			new CreateSucess(`Successfully created new merchant`, merchantResult),
+		)
 	}
 }
 export default new Controller()

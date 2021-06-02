@@ -5,7 +5,7 @@ import { CreateSucess } from '@responses'
 const TAG = '[CashAdvanceApplicationController]'
 
 export class Controller {
-  public async createCashAdvanceApplication(
+	public async createCashAdvanceApplication(
 		req: any,
 		res: Response,
 		next: NextFunction,
@@ -15,12 +15,19 @@ export class Controller {
 		const { CashAdvanceApplicationService } = req.container.cradle
 		let result
 		try {
-			result = await CashAdvanceApplicationService.createCashAdvanceApplication(req.body)
+			result = await CashAdvanceApplicationService.createCashAdvanceApplication(
+				req.body,
+			)
 		} catch (error) {
 			return next(error)
 		}
 
-		return res.send(new CreateSucess(`Successfully created new cash advance application`, result))
+		return res.send(
+			new CreateSucess(
+				`Successfully created new cash advance application`,
+				result,
+			),
+		)
 	}
 
 	public async retrieveListOfCashAdvanceApplications(
@@ -33,7 +40,9 @@ export class Controller {
 		const { CashAdvanceApplicationService } = req.container.cradle
 		let result
 		try {
-			result = await CashAdvanceApplicationService.retrieveListOfCashAdvanceApplications(req.query)
+			result = await CashAdvanceApplicationService.retrieveListOfCashAdvanceApplications(
+				req.query,
+			)
 		} catch (error) {
 			return next(error)
 		}

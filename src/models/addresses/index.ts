@@ -1,11 +1,11 @@
 export interface IAddress {
 	uuid: number
-	street_address: string
+	streetAddress: string
 	city: string
 	state: string
-	zipCode: number
-	country: number
-	phoneNumber: number
+	zipCode: string
+	country: string
+	phoneNumber: string
 	createdAt: Date
 	updatedAt: Date
 	dateArchived: Date
@@ -13,5 +13,10 @@ export interface IAddress {
 }
 
 export interface IAddressDto {
-	uuid: number
+	streetAddress: string
+	city: string
+	state: string
+	zipCode: string
+	country: string
+	phoneNumber: string
 }

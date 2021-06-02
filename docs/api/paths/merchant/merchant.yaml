@@ -9,13 +9,116 @@ post:
         schema:
           type: object
           properties:
-            firstName:
-              type: string
-              description: Merchant First Name
-              example: "John"
-          required:
-            - firstName
-    required: true
+            address:
+              type: object
+              properties:
+                streetAddress:
+                  type: string
+                  description: Merchant Address
+                  example: "Sample Address"
+                city:
+                  type: string
+                  description: Merchant City
+                  example: "Sample City"
+                state:
+                  type: string
+                  description: Merchant State
+                  example: "Sample State"
+                zipCode:
+                  type: string
+                  description: Merchant Zip Code
+                  example: "Sample zip code"
+                country:
+                  type: string
+                  description: Merchant Country
+                  example: "Sample Country"
+                phoneNumber:
+                  type: string
+                  description: Merchant Phone Number
+                  example: "Sample Phone Number"
+            businessInformation:
+              type: object
+              properties:
+                  owner1FirstName:
+                    type: string
+                    description: Merchant Owner First Name
+                    example: "Owner John"
+                  owner1LastName:
+                    type: string
+                    description: Merchant Owner Last Name
+                    example: "Owner Doe"
+                  owner2FirstName:
+                    type: string
+                    description: Merchant Owner 2 First Name
+                    example: "Owner 1 John"
+                  owner2LastName:
+                    type: string
+                    description: Merchant Owner 2 Last Name
+                    example: "Owner 2 Doe"
+                  primaryContactName:
+                    type: string
+                    description: Merchant Primary Contact Name
+                    example: "Sample Contact Name"
+                  idNumber:
+                    type: string
+                    description: Merchant Id Number
+                    example: "Sample Id Number 123345"
+                  tinType:
+                    type: string
+                    enum: [ein, ssn]
+                    description: Merchant Tin type
+                    example: "ein"
+                  businessLicense:
+                    type: string
+                    description: Merchant Business License
+                    example: "Sample Business License"
+                  businessLicenseState:
+                    type: string
+                    description: Merchant Business License
+                    example: "Sample Business License"
+                  numberOfLocations:
+                    type: number
+                    description: Merchant Number of Locations
+                    example: 4
+                  businessFormationDate:
+                    type: string
+                    description: Merchant Business Formation Date
+                    example: "2021-06-02 01:57:14"
+            merchantInformation:
+              type: object
+              properties:
+                  name:
+                    type: string
+                    description: Merchant Name
+                    example: "Sample Name"
+                  email:
+                    type: string
+                    description: Merchant Email
+                    example: "Sample Email"
+                  businessName:
+                    type: string
+                    description: Merchant Business Name
+                    example: "Sample Business Name"
+                  businessEntity:
+                    type: object
+                    description: Merchant Business Entity
+                    example:
+                      corporation: true
+                      partnership: true
+                      limitedPartnership: true
+                  bankName:
+                    type: string
+                    description: Merchant Bank Name
+                    example: "Sample Bank Name"
+                  BankAccountNumber:
+                    type: string
+                    description: Merchant Account Number
+                    example: "312312424124"
+                  bankAccountRountingNumber:
+                    type: string
+                    description: Merchant Bank ACcount Routing Number
+                    example: "341256348"
+                      
   responses:
     200:
       description: Returns all examples

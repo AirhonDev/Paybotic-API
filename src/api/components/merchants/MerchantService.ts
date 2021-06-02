@@ -8,47 +8,79 @@ import * as moment from 'moment'
 
 import MerchantRepository from '@components/merchants/MerchantRepository'
 import AddressRepository from '@components/addresses/AddressRepository'
-import { IMerchant, IMerchantDto } from '@models/merchants/'
+import BusinessInformationRepository from '@components/business-informations/BusinessInformationRepository'
+import { IMerchant, IMerchantDto } from '@models/merchants/index'
+import { IAddress, IAddressDto } from '@models/addresses/index'
+import {
+	IBusinessInformation,
+	IBusinessInformationDto,
+} from '@models/business-informations/index'
 import knex from 'knex'
 
 export default class MerchantService {
 	private readonly _merchantRepository: MerchantRepository
 	private readonly _addressRepository: AddressRepository
+	private readonly _businessInformationRepository: BusinessInformationRepository
 
-	constructor({ MerchantRepository, AddressRepository }) {
+	constructor({
+		MerchantRepository,
+		AddressRepository,
+		BusinessInformationRepository,
+	}) {
 		this._addressRepository = AddressRepository
 		this._merchantRepository = MerchantRepository
+		this._businessInformationRepository = BusinessInformationRepository
 	}
 
-	public async storeMerchant(condition): Promise<any> {
-		// await this._addressRepository
-		//     .insert([
-		//         {
-		//             street_address: '134 1st avenue grace park west',
-		//         },
-		//         { city: 'caloocan city' },
-		//         { state: 'Manila' },
-		//         { zip_code: '1345' },
-		//         { country: 'Philippines' },
-		//         { phone_number: '09062531550' },
-		//         { fax_number: '345 3134' },
-		//     ])
-		//     .then(function (result) {
-		//         console.log(result)
-		//     })
+	public async storeMerchantsInformation(
+		address: IAddressDto,
+		businessInformation: IBusinessInformationDto,
+	): Promise<any> {
+		let resultAddressId
+		let resultBusinessInformationId
+		try {
+			resultAddressId = await this._addressRepository.insert(address)
+			resultBusinessInformationId = await this._businessInformationRepository.insert(
+				businessInformation,
+			)
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
 
-		const addressCols = [
-			{ street_address: '134 1st avenue grace park west' },
-			{ city: 'caloocan city' },
-			{ state: 'Manila' },
-			{ zipCode: '1345' },
-			{ country: 'Philippines' },
-			{ phoneNumber: '09062531550' },
-			{ faxNumber: '3453134' },
-			{ createdAt: moment() },
-			{ updatedAt: moment() },
-		]
+		const addressData: IAddress = {
+			...address,
+			archived: false,
+			createdAt: new Date(Date.now()),
+			dateArchived: null,
+			updatedAt: null,
+			uuid: resultAddressId[0], // mocked for now
+		}
+		const businessInformationData: IBusinessInformation = {
+			...businessInformation,
+			archived: false,
+			createdAt: new Date(Date.now()),
+			dateArchived: null,
+			updatedAt: null,
+			uuid: resultBusinessInformationId[0], // mocked for now
+		}
 
-		await this._addressRepository.insert(addressCols)
+		return { addressData, businessInformationData }
+	}
+
+	public async storeMerchant(merchant: IMerchantDto): Promise<any> {
+		let merchantID
+
+		merchantID = await this._merchantRepository.insert(merchant)
+
+		const merchantInformationData: IMerchant = {
+			...merchant,
+			archived: false,
+			createdAt: new Date(Date.now()),
+			dateArchived: null,
+			updatedAt: null,
+			uuid: merchantID[0], // mocked for now
+		}
+
+		return merchantInformationData
 	}
 }

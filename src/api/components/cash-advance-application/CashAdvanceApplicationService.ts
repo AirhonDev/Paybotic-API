@@ -5,7 +5,10 @@ import { some, transform } from 'lodash'
 
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import CashAdvanceApplicationRepository from '@components/cash-advance-application/CashAdvanceApplicationRepository'
-import { ICashAdvanceApplication, ICashAdvanceApplicationDto } from '@models/cash-advance-application/index'
+import {
+	ICashAdvanceApplication,
+	ICashAdvanceApplicationDto,
+} from '@models/cash-advance-application/index'
 
 const TAG = '[CashAdvanceApplicationService]'
 
@@ -16,28 +19,30 @@ export default class CashAdvanceApplicationService {
 		this._cashAdvanceApplicationRepository = CashAdvanceApplicationRepository
 	}
 
-  public async createCashAdvanceApplication(mca: ICashAdvanceApplicationDto): Promise<ICashAdvanceApplication> {
-    const METHOD = '[createCashAdvanceApplication]'
-    log.info(`${TAG} ${METHOD}`)
+	public async createCashAdvanceApplication(
+		mca: ICashAdvanceApplicationDto,
+	): Promise<ICashAdvanceApplication> {
+		const METHOD = '[createCashAdvanceApplication]'
+		log.info(`${TAG} ${METHOD}`)
 
-    try {
-      await this._cashAdvanceApplicationRepository.insert(mca)
-    } catch (DBError) {
-      throw new Error(DBError)
-    }
+		try {
+			await this._cashAdvanceApplicationRepository.insert(mca)
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
 
-    const mcaApplication: ICashAdvanceApplication = {
-      ...mca,
-      startDate: new Date(mca.startDate),
-      archived: false,
-      createdAt: new Date(Date.now()),
-      dateArchived: null,
-      updatedAt: null,
-      uuid: 1 // mocked for now
-    }
+		const mcaApplication: ICashAdvanceApplication = {
+			...mca,
+			startDate: new Date(mca.startDate),
+			archived: false,
+			createdAt: new Date(Date.now()),
+			dateArchived: null,
+			updatedAt: null,
+			uuid: 1, // mocked for now
+		}
 
-    return mcaApplication
-  }
+		return mcaApplication
+	}
 
 	public async retrieveListOfCashAdvanceApplications(condition): Promise<any> {
 		const METHOD = '[retrieveListOfCashAdvanceApplications]'
@@ -53,9 +58,16 @@ export default class CashAdvanceApplicationService {
 			...rest
 		} = condition
 
-		const postCols = [`${CASH_ADVANCE_APPLICATION}.uuid`, `${CASH_ADVANCE_APPLICATION}.created_at`]
+		const postCols = [
+			`${CASH_ADVANCE_APPLICATION}.uuid`,
+			`${CASH_ADVANCE_APPLICATION}.created_at`,
+		]
 		const actualCols = [
-			{ table: CASH_ADVANCE_APPLICATION, col: 'created_at', name: 'created_at' },
+			{
+				table: CASH_ADVANCE_APPLICATION,
+				col: 'created_at',
+				name: 'created_at',
+			},
 		]
 
 		const offset = page === 1 ? 0 : (page - 1) * perPage

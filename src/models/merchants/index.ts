@@ -6,9 +6,9 @@ export interface IMerchant {
 	physicalAddressId: number
 	corporateAddressId: number
 	businessInformationId: number
-	businessEntity: Object
+	businessEntity: string
 	bankName: string
-	BankAccountNumber: string
+	bankAccountNumber: string
 	bankAccountRountingNumber: string
 	createdAt: Date
 	updatedAt: Date
@@ -17,5 +17,15 @@ export interface IMerchant {
 }
 
 export interface IMerchantDto {
+	name: string
+	email: string
+	businessName: string
+	physicalAddressId: number
+	corporateAddressId: number
+	businessInformationId: number
+	businessEntity: string
+	bankName: string
+	bankAccountNumber: string
+	bankAccountRountingNumber: string
 	uuid: number
 }
