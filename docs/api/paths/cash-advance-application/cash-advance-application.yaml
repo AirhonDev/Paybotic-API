@@ -1,0 +1,71 @@
+post:
+  tags:
+  - Cash Advance Application
+  description: >
+    Merchant request for cash advance application.
+    Note: Only one cash advance can be active for a merchant
+  requestBody:
+    description: Provide cash advance application details
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            merchantId:
+              type: string
+              description: ID of merchant applying for MCA
+            principalAmount:
+              type: number
+              description: Principal amount applied for MCA application
+              example: 1
+            startDate:
+              type: string
+              format: date-time
+              description: Start date of MCA application
+              example: "2021-06-02T12:41:20.893Z"
+            paymentFrequency:
+              type: string
+              description: Scheduled frequency of merchant payment
+              example: daily
+            factorRate:
+              type: number
+              description: Factor rate for the MCA
+              example: 1.25
+            originationFee:
+              type: number
+              description: Origination cost fee for the MCA
+              example: 100
+            repaymentType:
+              type: string
+              description: Type of repayment of MCA
+              example: daily_witholding
+          required:
+            - merchantId
+            - principalAmount
+            - startDate
+            - paymentFrequency
+            - factorRate
+            - originationFee
+            - repaymentType
+    required: true
+  responses:
+    200:
+      description: Returns all examples
+      content: {}
+
+get:
+  tags:
+  - Cash Advance Application
+  description: Retrieve list of cash advance applications
+  parameters:
+      - $ref: '#/components/parameters/WhereField'
+      - $ref: '#/components/parameters/WhereValue'
+      - $ref: '#/components/parameters/OrderBy'
+      - $ref: '#/components/parameters/PerPage'
+      - $ref: '#/components/parameters/CreatedStartDate'
+      - $ref: '#/components/parameters/CreatedEndDate'
+      - $ref: '#/components/parameters/Page'
+  responses:
+    200:
+      description: Returns all examples
+      content: {}

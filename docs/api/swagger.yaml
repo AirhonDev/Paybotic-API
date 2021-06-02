@@ -21,6 +21,8 @@ servers:
 tags:
 - name: Post
   description: Post management endpoints
+- name: Cash Advance Application
+  description: Cash advance application management endpoints
 paths:
   $ref: ./docs/api/paths/index.yaml
 components:

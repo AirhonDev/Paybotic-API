@@ -7,7 +7,7 @@ exports.up = function(knex) {
     t.foreign('merchant_id').references('uuid').inTable(MERCHANT_TABLE)
     t.decimal('principal_amount', 8, 2).notNullable()
     t.datetime('start_date').notNullable()
-    t.datetime('end_date').notNullable()
+    t.datetime('end_date')
     t.enu('payment_frequency', ['daily', 'weekly', 'monthly', 'biweekly', 'bimonthly']).notNullable()
     t.decimal('factor_rate', 4, 4).notNullable()
     t.decimal('origination_fee', 8, 2).notNullable()
