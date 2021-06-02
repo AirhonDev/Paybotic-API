@@ -15,8 +15,24 @@ export default class MerchantService {
 	private readonly _addressRepository: AddressRepository
 
 	public async storeMerchant(condition): Promise<any> {
-		await this._addressRepository
-			.insert({
+		// await this._addressRepository
+		//     .insert([
+		//         {
+		//             street_address: '134 1st avenue grace park west',
+		//         },
+		//         { city: 'caloocan city' },
+		//         { state: 'Manila' },
+		//         { zip_code: '1345' },
+		//         { country: 'Philippines' },
+		//         { phone_number: '09062531550' },
+		//         { fax_number: '345 3134' },
+		//     ])
+		//     .then(function (result) {
+		//         console.log(result)
+		//     })
+
+		const addressCols = [
+			{
 				street_address: '134 1st avenue grace park west',
 				city: 'caloocan city',
 				state: 'Manila',
@@ -24,9 +40,8 @@ export default class MerchantService {
 				country: 'Philippines',
 				phone_number: '09062531550',
 				fax_number: '345 3134',
-			})
-			.then(function (result) {
-				console.log(result)
-			})
+			},
+		]
+		await this._addressRepository.insert(addressCols)
 	}
 }
