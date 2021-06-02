@@ -2,7 +2,7 @@ const { BUSINESS_INFORMATION_TABLE } = process.env
 
 exports.up = function (knex) {
   return knex.schema.createTable(BUSINESS_INFORMATION_TABLE, (t) => {
-    t.increments('id').primary()
+    t.increments('uuid').primary()
     t.string('owner1_first_name')
     t.string('owner1_last_name')
     t.string('owner2_first_name').nullable()
@@ -16,6 +16,8 @@ exports.up = function (knex) {
     t.integer('number_of_locations')
     t.datetime('business_formation_date')
     t.timestamps(['created_at', 'updated_at'], [knex.fn.now(), knex.fn.now()])
+    t.dateTime('date_archived')
+    t.boolean('archived').defaultTo(false)
   })
 
 };

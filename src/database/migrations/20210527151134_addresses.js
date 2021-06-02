@@ -4,7 +4,7 @@ const {
 
 exports.up = function (knex) {
   return knex.schema.createTable(ADDRESS_TABLE, (t) => {
-    t.increments('id').primary()
+    t.increments('uuid').primary()
     t.string('street_address')
     t.string('city')
     t.string('state')
@@ -13,10 +13,11 @@ exports.up = function (knex) {
     t.string('phone_number')
     t.string('fax_number')
     t.timestamps(['created_at', 'updated_at'], [knex.fn.now(), knex.fn.now()])
-
+    t.dateTime('date_archived')
+    t.boolean('archived').defaultTo(false)
   })
 };
 
 exports.down = function (knex) {
-
+  return knex.schema.dropTableIfExists(ADDRESS_TABLE)
 };
