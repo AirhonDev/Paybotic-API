@@ -2,10 +2,12 @@ import { Application } from 'express'
 
 import PostRouter from '@components/posts/PostRouter'
 import MerchantRouter from '@components/merchants/MerchantRouter'
+import CashAdvanceApplicationRouter from '@components/cash-advance-application/CashAdvanceApplicationRouter'
 
 function v1Routes(app: Application): void {
 	app.use('/api/v1/posts', PostRouter)
 	app.use('/api/v1/merchants', MerchantRouter)
+	app.use('/api/v1/cash-advance-applications', CashAdvanceApplicationRouter)
 }
 
 export default function routes(app: Application): void {
