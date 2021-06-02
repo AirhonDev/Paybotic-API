@@ -1,4 +1,4 @@
-merchant:
+post:
   tags:
   - Merchant
   description: Add new merchant
@@ -9,12 +9,12 @@ merchant:
         schema:
           type: object
           properties:
-            headlines:
+            firstName:
               type: string
-              description: Headline of merchant
-              example: "Github is very good"
+              description: Merchant First Name
+              example: "John"
           required:
-            - headlines
+            - firstName
     required: true
   responses:
     200:

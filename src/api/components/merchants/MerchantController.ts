@@ -8,7 +8,19 @@ export class Controller {
 		next: NextFunction,
 	): Promise<Response | void> {
 		const METHOD = '[storePost]'
-		console.log('This is fucking working')
+		const { MerchantService } = req.container.cradle
+		let result
+		try {
+			await MerchantService.storeMerchant(req.body)
+			console.log(req.body.firstName)
+			result = req.body.firstName
+		} catch (error) {
+			return next(error)
+		}
+
+		req.locals.result = result
+		req.locals.message = `Successfully Created a merchant`
+		req.locals.total = 1
 
 		return next()
 	}
