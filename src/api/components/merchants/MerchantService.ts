@@ -32,6 +32,43 @@ export default class MerchantService {
 		this._businessInformationRepository = BusinessInformationRepository
 	}
 
+	public async createMerchant(
+		address: IAddressDto,
+		businessInformation: IBusinessInformationDto,
+		merchant: IMerchantDto
+	): Promise<any> {
+		let merchantInfoResult
+		let merchantInformationData
+
+		const createdAt = {
+			createdAt: new Date(Date.now()),
+		}
+		const addressInformationPayload = {
+			...address,
+			...createdAt
+		}
+
+		const businessInformationPayload = {
+			...businessInformation,
+			...createdAt
+		}
+
+		merchantInfoResult = await this.storeMerchantsInformation(addressInformationPayload, businessInformationPayload)
+
+		const merchantInformationPayload = {
+			...merchant,
+			...createdAt,
+			physicalAddressId: merchantInfoResult.addressData.uuid,
+			corporateAddressId: merchantInfoResult.addressData.uuid,
+			businessInformationId: merchantInfoResult.businessInformationData.uuid,
+		}
+
+		merchantInformationData = await this.storeMerchant(merchantInformationPayload)
+
+		return { merchantInfoResult, merchantInformationData}
+
+	}
+
 	public async storeMerchantsInformation(
 		address: IAddressDto,
 		businessInformation: IBusinessInformationDto,

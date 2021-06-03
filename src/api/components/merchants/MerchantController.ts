@@ -13,30 +13,11 @@ export class Controller {
 		let merchantInfoResult
 		let merchantResult
 		try {
-			const addressInformation = {
-				...req.body.address,
-				createdAt: new Date(Date.now()),
-			}
-			const businessInformation = {
-				...req.body.businessInformation,
-				createdAt: new Date(Date.now()),
-			}
-
-			merchantInfoResult = await MerchantService.storeMerchantsInformation(
-				addressInformation,
-				businessInformation,
+			merchantResult = await MerchantService.createMerchant(
+				req.body.address,
+				req.body.businessInformation,
+				req.body.merchantInformation,
 			)
-
-			const merchantInformation = {
-				...req.body.merchantInformation,
-				createdAt: new Date(Date.now()),
-				physicalAddressId: merchantInfoResult.addressData.uuid,
-				corporateAddressId: merchantInfoResult.addressData.uuid,
-				businessInformationId: merchantInfoResult.businessInformationData.uuid,
-				businessEntity: req.body.merchantInformation.businessEntity
-			}
-
-			merchantResult = await MerchantService.storeMerchant(merchantInformation)
 		} catch (error) {
 			return next(error)
 		}
