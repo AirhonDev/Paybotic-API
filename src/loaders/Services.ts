@@ -2,8 +2,11 @@ import { asClass, Lifetime, AwilixContainer } from 'awilix'
 import l from '@logger'
 
 import PostService from '@components/posts/PostService'
+import MerchantService from '@components/merchants/MerchantService'
+import CashAdvanceApplicationService from '@components/cash-advance-application/CashAdvanceApplicationService'
+// import BusinessInformationService from '@components/business-informations/BusinessInformationService'
 
-const SERVICES = [PostService]
+const SERVICES = [PostService, MerchantService, CashAdvanceApplicationService]
 
 export default (container: AwilixContainer): void => {
 	SERVICES.forEach((service: any) => {

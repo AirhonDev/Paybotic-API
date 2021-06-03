@@ -1,2 +1,8 @@
 /posts:
   $ref: ./post/post.yaml
+
+/merchants:
+  $ref: ./merchant/merchant.yaml
+
+/cash-advance-applications:
+  $ref: ./cash-advance-application/cash-advance-application.yaml
