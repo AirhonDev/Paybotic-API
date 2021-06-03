@@ -14,8 +14,8 @@ info:
 servers:
 - url: http://127.0.0.1:8080/api/v1
   description: Development server
-- url: https://staging.project-server.com/v1
-  description: Staging server
+- url: http://54.152.214.33:8080/api/v1
+  description: UAT EC2 server
 - url: https://api.project-server.com/v1
   description: Production server
 tags:
