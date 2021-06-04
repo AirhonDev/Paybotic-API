@@ -181,7 +181,7 @@ export default class MerchantService {
 			const condQuery = { ...decoded }
 			if (whereField && whereValue) condQuery[whereField] = whereValue
 
-			queryResult = await this._businessInformationRepository.findManyByCondition(
+			queryResult = await this._merchantRepository.findManyByCondition(
 				condQuery,
 				pagination,
 				orderQuery,
