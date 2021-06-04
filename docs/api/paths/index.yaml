@@ -5,7 +5,7 @@
   $ref: ./merchant/merchant.yaml
 
 /merchants/{merchantId}:
-  $ref: ./merchant/merchant.yaml
+  $ref: ./merchant/merchant.id.yaml
 
 /cash-advance-applications:
   $ref: ./cash-advance-application/cash-advance-application.yaml

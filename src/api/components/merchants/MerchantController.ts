@@ -66,14 +66,15 @@ export class Controller {
 
 		const { MerchantService } = req.container.cradle
 		let result
-
 		try {
 			result = await MerchantService.retrieveMerchantById(req.query)
 		} catch (error) {
 			return next(error)
 		}
 
-		return next()
+		return res.send(
+			new CreateSucess(`Merchant Successfully Retrieved`, result),
+		)
 	}
 }
 

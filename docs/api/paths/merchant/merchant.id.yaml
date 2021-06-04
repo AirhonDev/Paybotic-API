@@ -1,0 +1,17 @@
+get:
+  tags:
+  - Merchant
+  description: Retrieve a merchant by Id
+  parameters:
+      - in: query
+        name: merchantId
+        required: true
+        schema:
+          type: number
+          example: 1
+        description: Enter Merchant Id
+
+  responses:
+    200:
+      description: Returns all examples
+      content: {}
