@@ -139,3 +139,12 @@ get:
       description: Returns all examples
       content: {}
 
+get:
+  tags:
+  - Merchant
+  description: Retrieve a merchant by Id
+  responses:
+    200:
+      description: Returns all examples
+      content: {}
+
