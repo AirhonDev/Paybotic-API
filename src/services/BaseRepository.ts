@@ -143,4 +143,10 @@ export default abstract class {
 			throw new Error(SQLError)
 		}
 	}
+
+	public async findOneByCondition(condition): Promise<any> {
+		let result
+
+		console.log('test')
+	}
 }

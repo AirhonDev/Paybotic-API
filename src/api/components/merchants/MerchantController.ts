@@ -51,6 +51,29 @@ export class Controller {
 		req.locals.result = result.data
 		req.locals.message = `Successfully retrived list of merchants`
 		req.locals.total = result.totalCount
+
+		return next()
+	}
+
+	public async retrieveMerchantById(
+		req: any,
+		res: Response,
+		next: NextFunction,
+	): Promise<Response | void> {
+		const METHOD = '[retrieveMerchantById]'
+
+		log.info(`${TAG} ${METHOD}`)
+
+		const { MerchantService } = req.container.cradle
+		let result
+
+		try {
+			result = await MerchantService.retrieveMerchantById(req.query)
+		} catch (error) {
+			return next(error)
+		}
+
+		return next()
 	}
 }
 

@@ -194,4 +194,12 @@ export default class MerchantService {
 
 		return queryResult
 	}
+
+	public async retrieveMerchantById(condition): Promise<any> {
+		let queryResult
+
+		queryResult = await this._merchantRepository.findOneByCondition(condition)
+
+		return queryResult
+	}
 }

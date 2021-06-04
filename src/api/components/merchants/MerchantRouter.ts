@@ -5,5 +5,6 @@ import Metadata from '@middlewares/metadata.list'
 
 export default express
 	.Router()
-	.post('/', Controller.createMerchant, Metadata)
+	.post('/', Controller.createMerchant)
 	.get('/', Controller.retrieveListOfMerchants, Metadata)
+	.get('/:merchantId', Controller.retrieveMerchantById, Metadata)
