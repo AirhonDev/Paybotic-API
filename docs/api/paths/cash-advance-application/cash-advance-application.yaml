@@ -20,9 +20,12 @@ post:
               example: 1
             startDate:
               type: string
-              format: date-time
               description: Start date of MCA application
-              example: "2021-06-02T12:41:20.893Z"
+              example: "2021-06-06 01:57:14"
+            endDate:
+              type: string
+              description: Start date of MCA application
+              example: "2021-06-06 01:57:14"
             paymentFrequency:
               type: string
               description: Scheduled frequency of merchant payment
