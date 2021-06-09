@@ -129,4 +129,17 @@ export default class CashAdvanceApplicationService {
 
 		return queryResult
 	}
+
+	public async retrieveCashAdvanceApplicationById(condition): Promise<any> {
+		let cashAdvanceApplicationResult
+		try {
+			cashAdvanceApplicationResult = await this._cashAdvanceApplicationRepository.findOneByCondition(
+				condition.cashAdvanceApplicationId,
+			)
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
+
+		return cashAdvanceApplicationResult
+	}
 }

@@ -9,3 +9,6 @@
 
 /cash-advance-applications:
   $ref: ./cash-advance-application/cash-advance-application.yaml
+
+/cash-advance-applications/{cashAdvanceApplicationId}:
+  $ref: ./cash-advance-application/cash-advance-application.id.yaml

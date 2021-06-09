@@ -96,7 +96,7 @@ export default class MerchantService {
 			createdAt: new Date(Date.now()),
 			dateArchived: null,
 			updatedAt: null,
-			uuid: resultAddressId[0], // mocked for now
+			uuid: resultAddressId[0],
 		}
 		const businessInformationData: IBusinessInformation = {
 			...businessInformation,
@@ -104,7 +104,7 @@ export default class MerchantService {
 			createdAt: new Date(Date.now()),
 			dateArchived: null,
 			updatedAt: null,
-			uuid: resultBusinessInformationId[0], // mocked for now
+			uuid: resultBusinessInformationId[0],
 		}
 
 		return { addressData, businessInformationData }
@@ -121,7 +121,7 @@ export default class MerchantService {
 			createdAt: new Date(Date.now()),
 			dateArchived: null,
 			updatedAt: null,
-			uuid: merchantID[0], // mocked for now
+			uuid: merchantID[0],
 		}
 
 		return merchantInformationData
@@ -259,7 +259,7 @@ export default class MerchantService {
 				createdAt: new Date(Date.now()),
 				dateArchived: null,
 				updatedAt: new Date(Date.now()),
-				uuid: condition.merchantId, // mocked for now
+				uuid: condition.merchantId,
 			}
 
 			return merchantInformationData
