@@ -43,6 +43,7 @@ export default class MerchantService {
 
 		const createdAt = {
 			createdAt: new Date(Date.now()),
+			updatedAt: new Date(Date.now()),
 		}
 		const addressInformationPayload = {
 			...address,
@@ -214,8 +215,11 @@ export default class MerchantService {
 				merchantResult[0].physical_address_id,
 			)
 
-			corporateAddressResult = physicalAddressResult;
-			if (merchantResult[0].physical_address_id !== merchantResult[0].corporate_address_id) {
+			corporateAddressResult = physicalAddressResult
+			if (
+				merchantResult[0].physical_address_id !==
+				merchantResult[0].corporate_address_id
+			) {
 				corporateAddressResult = await this._addressRepository.findOneByCondition(
 					merchantResult[0].corporate_address_id,
 				)
@@ -230,6 +234,33 @@ export default class MerchantService {
 					return merchant
 				},
 			)
+
+			return merchantInformationData
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
+	}
+
+	public async updateMerchant(condition, merchant: IMerchantDto): Promise<any> {
+		let merchantResult
+		try {
+			const merchantPayload = {
+				...merchant,
+				updatedAt: new Date(Date.now()),
+			}
+			merchantResult = await this._merchantRepository.updateOneByUuid(
+				condition.merchantId,
+				merchantPayload,
+			)
+
+			const merchantInformationData: IMerchant = {
+				...merchant,
+				archived: false,
+				createdAt: new Date(Date.now()),
+				dateArchived: null,
+				updatedAt: new Date(Date.now()),
+				uuid: condition.merchantId, // mocked for now
+			}
 
 			return merchantInformationData
 		} catch (DBError) {

@@ -74,6 +74,30 @@ export class Controller {
 
 		return res.send(new CreateSucess(`Merchant Successfully Retrieved`, result))
 	}
-}
 
+	public async updateMerchant(
+		req: any,
+		res: Response,
+		next: NextFunction,
+	): Promise<Response | void> {
+		const METHOD = '[updateMerchant]'
+
+		log.info(`${TAG} ${METHOD}`)
+
+		const { MerchantService } = req.container.cradle
+		let updatedMerchantResult
+		try {
+			updatedMerchantResult = await MerchantService.updateMerchant(
+				req.query,
+				req.body,
+			)
+		} catch (error) {
+			return next(error)
+		}
+
+		return res.send(
+			new CreateSucess(`Successfully updated merchant`, updatedMerchantResult),
+		)
+	}
+}
 export default new Controller()

@@ -8,3 +8,4 @@ export default express
 	.post('/', Controller.createMerchant)
 	.get('/', Controller.retrieveListOfMerchants, Metadata)
 	.get('/:merchantId', Controller.retrieveMerchantById, Metadata)
+	.put('/:merchantId', Controller.updateMerchant, Metadata)
