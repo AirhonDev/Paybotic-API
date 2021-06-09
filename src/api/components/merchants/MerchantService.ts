@@ -3,7 +3,7 @@ const { ADDRESS_TABLE } = process.env
 const { BUSINESS_INFORMATION_TABLE } = process.env
 
 import log from '@logger'
-import { some, transform } from 'lodash'
+import { some, transform, mapValues } from 'lodash'
 
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import MerchantRepository from '@components/merchants/MerchantRepository'
@@ -196,16 +196,44 @@ export default class MerchantService {
 	}
 
 	public async retrieveMerchantById(condition): Promise<any> {
-		let queryResult
+		let merchantResult
+		let physicalAddressResult
+		let corporateAddressResult
+		let businessIformationResult
 
 		try {
-			queryResult = await this._merchantRepository.findOneByCondition(
+			merchantResult = await this._merchantRepository.findOneByCondition(
 				condition.merchantId,
 			)
+
+			physicalAddressResult = await this._addressRepository.findOneByCondition(
+				merchantResult[0].physical_address_id,
+			)
+
+			businessIformationResult = await this._businessInformationRepository.findOneByCondition(
+				merchantResult[0].physical_address_id,
+			)
+
+			corporateAddressResult = physicalAddressResult;
+			if (merchantResult[0].physical_address_id !== merchantResult[0].corporate_address_id) {
+				corporateAddressResult = await this._addressRepository.findOneByCondition(
+					merchantResult[0].corporate_address_id,
+				)
+			}
+
+			const merchantInformationData = mapValues(
+				merchantResult,
+				function (merchant) {
+					merchant.physical_address_id = physicalAddressResult
+					merchant.corporate_address_id = corporateAddressResult
+					merchant.business_information_id = businessIformationResult
+					return merchant
+				},
+			)
+
+			return merchantInformationData
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
-
-		return queryResult
 	}
 }

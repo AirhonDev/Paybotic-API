@@ -72,9 +72,7 @@ export class Controller {
 			return next(error)
 		}
 
-		return res.send(
-			new CreateSucess(`Merchant Successfully Retrieved`, result),
-		)
+		return res.send(new CreateSucess(`Merchant Successfully Retrieved`, result))
 	}
 }
 
