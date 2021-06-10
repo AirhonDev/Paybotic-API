@@ -25,8 +25,14 @@ export default class CashAdvanceApplicationService {
 		const METHOD = '[createCashAdvanceApplication]'
 		log.info(`${TAG} ${METHOD}`)
 
+		const mcaPayload = {
+			...mca,
+			status: 'pending',
+			createdAt: new Date(Date.now()),
+		}
+
 		try {
-			await this._cashAdvanceApplicationRepository.insert(mca)
+			await this._cashAdvanceApplicationRepository.insert(mcaPayload)
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
@@ -122,5 +128,18 @@ export default class CashAdvanceApplicationService {
 		}
 
 		return queryResult
+	}
+
+	public async retrieveCashAdvanceApplicationById(condition): Promise<any> {
+		let cashAdvanceApplicationResult
+		try {
+			cashAdvanceApplicationResult = await this._cashAdvanceApplicationRepository.findOneByCondition(
+				condition.cashAdvanceApplicationId,
+			)
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
+
+		return cashAdvanceApplicationResult
 	}
 }

@@ -7,3 +7,8 @@ export default express
 	.Router()
 	.post('/', Controller.createCashAdvanceApplication)
 	.get('/', Controller.retrieveListOfCashAdvanceApplications, Metadata)
+	.get(
+		'/:cashAdvanceApplicationId',
+		Controller.retrieveCashAdvanceApplicationById,
+		Metadata,
+	)

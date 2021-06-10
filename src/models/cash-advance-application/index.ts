@@ -8,6 +8,7 @@ export interface ICashAdvanceApplication {
 	factorRate: number
 	originationFee: number
 	repaymentType: string
+	status: string
 	createdAt: Date
 	updatedAt: Date
 	dateArchived: Date
@@ -22,4 +23,5 @@ export interface ICashAdvanceApplicationDto {
 	factorRate: number
 	originationFee: number
 	repaymentType: string
+	status: string
 }

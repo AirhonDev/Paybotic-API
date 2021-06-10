@@ -1,0 +1,81 @@
+get:
+  tags:
+  - Merchant
+  description: Retrieve a merchant by Id
+  parameters:
+      - in: query
+        name: merchantId
+        required: true
+        schema:
+          type: number
+          example: 1
+        description: Enter Merchant Id
+
+  responses:
+    200:
+      description: Returns all examples
+      content: {}
+
+put:
+  tags:
+  - Merchant
+  description: Update Merchant By Id
+  parameters:
+      - in: query
+        name: merchantId
+        required: true
+        schema:
+          type: number
+          example: 1
+        description: Enter Merchant Id
+  requestBody:
+    description: Provide merchant details
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Merchant Name
+              example: "Sample Name"
+            email:
+              type: string
+              description: Merchant Email
+              example: "Sample Email"
+            businessName:
+              type: string
+              description: Merchant Business Name
+              example: "Sample Business Name"
+            physicalAddressId:
+              type: number
+              description: Physical Address Id
+              example: 1
+            corporateAddressId:
+              type: number
+              description: Corporate Address Id
+              example: 1
+            businessInformationId:
+              type: number
+              description: Business Information Id
+              example: 1
+            businessEntity:
+              type: string
+              description: Merchant Business Entity
+              example: "{corporation: true partnership: true limitedPartnership: true}"
+            bankName:
+              type: string
+              description: Merchant Bank Name
+              example: "Sample Bank Name"
+            bankAccountNumber:
+              type: string
+              description: Merchant Account Number
+              example: "312312424124"
+            bankAccountRountingNumber:
+              type: string
+              description: Merchant Bank ACcount Routing Number
+              example: "341256348"
+  responses:
+    200:
+      description: Returns all examples
+      content: {}

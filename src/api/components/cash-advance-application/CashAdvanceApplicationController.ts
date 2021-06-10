@@ -53,6 +53,26 @@ export class Controller {
 
 		return next()
 	}
+
+	public async retrieveCashAdvanceApplicationById(
+		req: any,
+		res: Response,
+		next: NextFunction,
+	): Promise<Response | void> {
+		const METHOD = '[retrieveCashAdvanceApplicationById]'
+		log.info(`${TAG} ${METHOD}`)
+		const { CashAdvanceApplicationService } = req.container.cradle
+		let result
+		try {
+			result = await CashAdvanceApplicationService.retrieveCashAdvanceApplicationById(
+				req.query,
+			)
+		} catch (error) {
+			return next(error)
+		}
+
+		return res.send(new CreateSucess(`Cash advance application Successfully Retrieved`, result))
+	}
 }
 
 export default new Controller()
