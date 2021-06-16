@@ -1,6 +1,4 @@
 const { MERCHANT_TABLE } = process.env
-const { ADDRESS_TABLE } = process.env
-const { BUSINESS_INFORMATION_TABLE } = process.env
 const { PAYMENT_DASHBOARD_API_HOST, PAYMENT_DASHBOARD_API_TOKEN } = process.env
 
 import log from '@logger'
