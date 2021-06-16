@@ -1,6 +1,7 @@
 import { Response, NextFunction } from 'express'
 import log from '@logger'
 import { CreateSucess } from '@responses'
+import * as moment from 'moment'
 
 const TAG = '[MerchantController]'
 
@@ -39,16 +40,30 @@ export class Controller {
 		log.info(`${TAG} ${METHOD}`)
 
 		const { MerchantService } = req.container.cradle
+		const { PaymentDashboardApiService } = req.container.cradle
 
 		let result
+		let retrieveDashboardUsers
 
 		try {
+			// const id = 6559
+			// const currentDate = moment().format(`YYYY-MM-DD`)
+			// const dateType = `settlement_date`
+			// retrieveDashboardUsers = await PaymentDashboardApiService.retrieveOperatorByEmail(
+			// 	'john.terry@goodweedco.com',
+			// )
+			// retrieveDashboardUsers = await PaymentDashboardApiService.retrieveTerminal(
+			// 	id,
+			// 	currentDate,
+			// 	dateType,
+			// )
 			result = await MerchantService.retrieveListOfMerchants(req.query)
 		} catch (error) {
 			return next(error)
 		}
 
-		req.locals.result = result.data
+		// req.locals.result = result.data
+		req.locals.result = retrieveDashboardUsers
 		req.locals.message = `Successfully retrived list of merchants`
 		req.locals.total = result.totalCount
 
