@@ -317,16 +317,21 @@ export default class MerchantService {
 	): Promise<any> {
 		const METHOD = '[storeMerchantTerminals]'
 		log.info(`${TAG} ${METHOD}`)
-		const merchantTerminalPayload: IMerchantTerminal = {
-			merchant_id: merchantId,
-			terminal_api_id: terminal.id,
-			name: terminal.name,
-			createdAt: new Date(Date.now()),
-			dateArchived: null,
-			updatedAt: null,
-			archived: false,
-		}
 
-		await this._merchantTerminalRepository.insert(merchantTerminalPayload)
+		try {
+			const merchantTerminalPayload: IMerchantTerminal = {
+				merchant_id: merchantId,
+				terminal_api_id: terminal.id,
+				name: terminal.name,
+				createdAt: new Date(Date.now()),
+				dateArchived: null,
+				updatedAt: null,
+				archived: false,
+			}
+
+			await this._merchantTerminalRepository.insert(merchantTerminalPayload)
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
 	}
 }
