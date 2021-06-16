@@ -10,6 +10,7 @@ if (process.env.USE_MODULE_ALIASES === 'true') {
 
 import Server from './server'
 import routes from './api/routes'
+import cron from 'node-cron'
 
 const port = parseInt(process.env.APP_PORT)
 export default new Server().router(routes).listen(port)

@@ -137,11 +137,15 @@ export default class MerchantService {
 
 		operatorResult = await this.retrieveOperatorByEmail(merchant.email)
 
-		const terminals = take(operatorResult.results[0].terminals)
+		if (operatorResult.results.length) {
+			const terminals = take(operatorResult.results[0].terminals)
 
-		map(terminals, (terminal) =>
-			this.storeMerchantTerminals(terminal, merchantInformationData.uuid),
-		)
+			// console.log(operatorResult.results)
+			// console.log(operatorResult.results)
+			await Promise.all(map(terminals, async (terminal) =>
+				 await this.storeMerchantTerminals(terminal, merchantInformationData.uuid),
+			))
+		}
 
 		return merchantInformationData
 	}
@@ -222,15 +226,15 @@ export default class MerchantService {
 		let businessIformationResult
 
 		try {
-			merchantResult = await this._merchantRepository.findOneByCondition(
+			merchantResult = await this._merchantRepository.findOneByUuid(
 				condition.merchantId,
 			)
 
-			physicalAddressResult = await this._addressRepository.findOneByCondition(
+			physicalAddressResult = await this._addressRepository.findOneByUuid(
 				merchantResult[0].physical_address_id,
 			)
 
-			businessIformationResult = await this._businessInformationRepository.findOneByCondition(
+			businessIformationResult = await this._businessInformationRepository.findOneByUuid(
 				merchantResult[0].physical_address_id,
 			)
 
@@ -239,7 +243,7 @@ export default class MerchantService {
 				merchantResult[0].physical_address_id !==
 				merchantResult[0].corporate_address_id
 			) {
-				corporateAddressResult = await this._addressRepository.findOneByCondition(
+				corporateAddressResult = await this._addressRepository.findOneByUuid(
 					merchantResult[0].corporate_address_id,
 				)
 			}
@@ -318,18 +322,29 @@ export default class MerchantService {
 		const METHOD = '[storeMerchantTerminals]'
 		log.info(`${TAG} ${METHOD}`)
 
+		let exisitingTerminal
 		try {
-			const merchantTerminalPayload: IMerchantTerminal = {
-				merchant_id: merchantId,
+			const condition = {
 				terminal_api_id: terminal.id,
-				name: terminal.name,
-				createdAt: new Date(Date.now()),
-				dateArchived: null,
-				updatedAt: null,
-				archived: false,
+			}
+			exisitingTerminal = await this._merchantTerminalRepository.findOneByCondition(
+				condition,
+			)
+
+			if (!exisitingTerminal.length) {
+				const merchantTerminalPayload: IMerchantTerminal = {
+					merchant_id: merchantId,
+					terminal_api_id: terminal.id,
+					name: terminal.name,
+					createdAt: new Date(Date.now()),
+					dateArchived: null,
+					updatedAt: null,
+					archived: false,
+				}
+				await this._merchantTerminalRepository.insert(merchantTerminalPayload)
 			}
 
-			await this._merchantTerminalRepository.insert(merchantTerminalPayload)
+
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
