@@ -138,13 +138,16 @@ export default class MerchantService {
 		operatorResult = await this.retrieveOperatorByEmail(merchant.email)
 
 		if (operatorResult.results.length) {
-			const terminals = take(operatorResult.results[0].terminals)
-
-			// console.log(operatorResult.results)
-			// console.log(operatorResult.results)
-			await Promise.all(map(terminals, async (terminal) =>
-				 await this.storeMerchantTerminals(terminal, merchantInformationData.uuid),
-			))
+			await Promise.all(
+				map(
+					operatorResult.results[0].terminals,
+					async (terminal) =>
+						await this.storeMerchantTerminals(
+							terminal,
+							merchantInformationData.uuid,
+						),
+				),
+			)
 		}
 
 		return merchantInformationData
@@ -343,8 +346,6 @@ export default class MerchantService {
 				}
 				await this._merchantTerminalRepository.insert(merchantTerminalPayload)
 			}
-
-
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
