@@ -94,6 +94,10 @@ post:
                     type: string
                     description: Merchant Owner 2 Last Name
                     example: "Owner 2 Doe"
+                  title:
+                    type: string
+                    description: Merchant Primary Contact Name
+                    example: "Sample Job Title"
                   primaryContactName:
                     type: string
                     description: Merchant Primary Contact Name
