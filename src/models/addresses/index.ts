@@ -6,6 +6,7 @@ export interface IAddress {
 	zipCode: string
 	country: string
 	phoneNumber: string
+	faxNumber: string
 	createdAt: Date
 	updatedAt: Date
 	dateArchived: Date
@@ -19,4 +20,5 @@ export interface IAddressDto {
 	zipCode: string
 	country: string
 	phoneNumber: string
+	faxNumber: string
 }

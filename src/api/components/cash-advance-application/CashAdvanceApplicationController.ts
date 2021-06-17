@@ -65,7 +65,7 @@ export class Controller {
 		let result
 		try {
 			result = await CashAdvanceApplicationService.retrieveCashAdvanceApplicationById(
-				req.query,
+				req.params,
 			)
 		} catch (error) {
 			return next(error)
@@ -74,6 +74,33 @@ export class Controller {
 		return res.send(
 			new CreateSucess(
 				`Cash advance application Successfully Retrieved`,
+				result,
+			),
+		)
+	}
+
+	public async approveCashAdvanceApplication(
+		req: any,
+		res: Response,
+		next: NextFunction,
+	): Promise<Response | void> {
+		const METHOD = '[approveCashAdvanceApplication]'
+		log.info(`${TAG} ${METHOD}`)
+		const { CashAdvanceApplicationService } = req.container.cradle
+		let result
+
+		try {
+			result = await CashAdvanceApplicationService.approveCashAdvanceApplication(
+				req.params,
+				req.body,
+			)
+		} catch (error) {
+			return next(error)
+		}
+
+		return res.send(
+			new CreateSucess(
+				`Cash advance application Successfully Approved`,
 				result,
 			),
 		)

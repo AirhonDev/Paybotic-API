@@ -12,3 +12,8 @@ export default express
 		Controller.retrieveCashAdvanceApplicationById,
 		Metadata,
 	)
+	.put(
+		'/:cashAdvanceApplicationId',
+		Controller.approveCashAdvanceApplication,
+		Metadata,
+	)

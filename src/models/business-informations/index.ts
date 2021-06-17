@@ -8,6 +8,7 @@ export interface IBusinessInformation {
 	idNumber: string
 	tinType: string
 	businessLicense: string
+	title: string
 	businessLicenseState: string
 	numberOfLocations: number
 	businessFormationDate: string
@@ -29,4 +30,5 @@ export interface IBusinessInformationDto {
 	businessLicenseState: string
 	numberOfLocations: number
 	businessFormationDate: string
+	title: string
 }

@@ -9,7 +9,7 @@ post:
         schema:
           type: object
           properties:
-            address:
+            physicalAddress:
               type: object
               properties:
                 streetAddress:
@@ -36,6 +36,45 @@ post:
                   type: string
                   description: Merchant Phone Number
                   example: "Sample Phone Number"
+                faxNumber:
+                  type: string
+                  description: Merchant Fax Number
+                  example: "Sample Fax Number"
+            corporateAddress:
+              type: object
+              properties:
+                sameWithPysicalId:
+                  type: boolean
+                  description: Define if  it is same with address
+                  example: true
+                streetAddress:
+                  type: string
+                  description: Merchant Address
+                  example: "Sample Address"
+                city:
+                  type: string
+                  description: Merchant City
+                  example: "Sample City"
+                state:
+                  type: string
+                  description: Merchant State
+                  example: "Sample State"
+                zipCode:
+                  type: string
+                  description: Merchant Zip Code
+                  example: "Sample zip code"
+                country:
+                  type: string
+                  description: Merchant Country
+                  example: "Sample Country"
+                phoneNumber:
+                  type: string
+                  description: Merchant Phone Number
+                  example: "Sample Phone Number"
+                faxNumber:
+                  type: string
+                  description: Merchant Fax Number
+                  example: "Sample Fax Number"
             businessInformation:
               type: object
               properties:
@@ -55,6 +94,10 @@ post:
                     type: string
                     description: Merchant Owner 2 Last Name
                     example: "Owner 2 Doe"
+                  title:
+                    type: string
+                    description: Merchant Primary Contact Name
+                    example: "Sample Job Title"
                   primaryContactName:
                     type: string
                     description: Merchant Primary Contact Name

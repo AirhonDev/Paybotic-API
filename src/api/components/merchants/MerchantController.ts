@@ -17,7 +17,8 @@ export class Controller {
 		let merchantResult
 		try {
 			merchantResult = await MerchantService.createMerchant(
-				req.body.address,
+				req.body.physicalAddress,
+				req.body.corporateAddress,
 				req.body.businessInformation,
 				req.body.merchantInformation,
 			)
@@ -68,7 +69,7 @@ export class Controller {
 		const { MerchantService } = req.container.cradle
 		let result
 		try {
-			result = await MerchantService.retrieveMerchantById(req.query)
+			result = await MerchantService.retrieveMerchantById(req.params)
 		} catch (error) {
 			return next(error)
 		}
@@ -89,7 +90,7 @@ export class Controller {
 		let updatedMerchantResult
 		try {
 			updatedMerchantResult = await MerchantService.updateMerchant(
-				req.query,
+				req.params,
 				req.body,
 			)
 		} catch (error) {
