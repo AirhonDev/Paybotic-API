@@ -232,32 +232,29 @@ export default class MerchantService {
 			)
 
 			physicalAddressResult = await this._addressRepository.findOneByUuid(
-				merchantResult[0].physical_address_id,
+				merchantResult.physical_address_id,
 			)
 
 			businessIformationResult = await this._businessInformationRepository.findOneByUuid(
-				merchantResult[0].physical_address_id,
+				merchantResult.physical_address_id,
 			)
 
 			corporateAddressResult = physicalAddressResult
 			if (
-				merchantResult[0].physical_address_id !==
-				merchantResult[0].corporate_address_id
+				merchantResult.physical_address_id !==
+				merchantResult.corporate_address_id
 			) {
 				corporateAddressResult = await this._addressRepository.findOneByUuid(
-					merchantResult[0].corporate_address_id,
+					merchantResult.corporate_address_id,
 				)
 			}
 
-			const merchantInformationData = mapValues(
-				merchantResult,
-				function (merchant) {
-					merchant.physical_address_id = physicalAddressResult
-					merchant.corporate_address_id = corporateAddressResult
-					merchant.business_information_id = businessIformationResult
-					return merchant
-				},
-			)
+			const merchantInformationData = {
+				...merchantResult,
+				physical_address_id: physicalAddressResult,
+				corporate_address_id: corporateAddressResult,
+				business_information_id: businessIformationResult,
+			}
 
 			return merchantInformationData
 		} catch (DBError) {

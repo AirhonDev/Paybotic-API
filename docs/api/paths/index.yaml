@@ -12,3 +12,6 @@
 
 /cash-advance-applications/{cashAdvanceApplicationId}:
   $ref: ./cash-advance-application/cash-advance-application.id.yaml
+
+/settlements:
+  $ref: ./settlement/settlement.yaml
