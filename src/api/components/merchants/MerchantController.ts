@@ -17,7 +17,8 @@ export class Controller {
 		let merchantResult
 		try {
 			merchantResult = await MerchantService.createMerchant(
-				req.body.address,
+				req.body.physicalAddress,
+				req.body.corporateAddress,
 				req.body.businessInformation,
 				req.body.merchantInformation,
 			)

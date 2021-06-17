@@ -2,7 +2,7 @@ const { MERCHANT_TABLE } = process.env
 const { PAYMENT_DASHBOARD_API_HOST, PAYMENT_DASHBOARD_API_TOKEN } = process.env
 
 import log from '@logger'
-import { some, transform, mapValues, take, map } from 'lodash'
+import { some, transform, mapValues, take, map, remove } from 'lodash'
 
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import MerchantRepository from '@components/merchants/MerchantRepository'
@@ -42,7 +42,8 @@ export default class MerchantService {
 	}
 
 	public async createMerchant(
-		address: IAddressDto,
+		physicalAddress: IAddressDto,
+		corporateAddress: IAddressDto,
 		businessInformation: IBusinessInformationDto,
 		merchant: IMerchantDto,
 	): Promise<any> {
@@ -53,8 +54,13 @@ export default class MerchantService {
 			createdAt: new Date(Date.now()),
 			updatedAt: new Date(Date.now()),
 		}
-		const addressInformationPayload = {
-			...address,
+		const physicalAddressPayload = {
+			...physicalAddress,
+			...createdAt,
+		}
+
+		const corporateAddressPayload = {
+			...corporateAddress,
 			...createdAt,
 		}
 
@@ -64,15 +70,16 @@ export default class MerchantService {
 		}
 
 		merchantInfoResult = await this.storeMerchantsInformation(
-			addressInformationPayload,
+			physicalAddressPayload,
+			corporateAddressPayload,
 			businessInformationPayload,
 		)
 
 		const merchantInformationPayload = {
 			...merchant,
 			...createdAt,
-			physicalAddressId: merchantInfoResult.addressData.uuid,
-			corporateAddressId: merchantInfoResult.addressData.uuid,
+			physicalAddressId: merchantInfoResult.physicalAddressData.uuid,
+			corporateAddressId: merchantInfoResult.corporateAddressData.uuid,
 			businessInformationId: merchantInfoResult.businessInformationData.uuid,
 		}
 
@@ -84,13 +91,35 @@ export default class MerchantService {
 	}
 
 	public async storeMerchantsInformation(
-		address: IAddressDto,
+		physicalAddress: IAddressDto,
+		corporateAddress: any,
 		businessInformation: IBusinessInformationDto,
 	): Promise<any> {
-		let resultAddressId
+		let resultPhysicalAddressId
+		let resultCorporateAddressId
 		let resultBusinessInformationId
 		try {
-			resultAddressId = await this._addressRepository.insert(address)
+			resultPhysicalAddressId = await this._addressRepository.insert(
+				physicalAddress,
+			)
+			resultCorporateAddressId = resultPhysicalAddressId
+			if (!corporateAddress.sameWithPysicalId) {
+				const corporateAddressPayload = {
+					streetAddress: corporateAddress.streetAddress,
+					city: corporateAddress.city,
+					state: corporateAddress.state,
+					zipCode: corporateAddress.zipCode,
+					country: corporateAddress.country,
+					phoneNumber: corporateAddress.phoneNumber,
+					faxNumber: corporateAddress.faxNumber,
+					createdAt: new Date(Date.now()),
+					updatedAt: new Date(Date.now()),
+				}
+
+				resultCorporateAddressId = await this._addressRepository.insert(
+					corporateAddressPayload,
+				)
+			}
 			resultBusinessInformationId = await this._businessInformationRepository.insert(
 				businessInformation,
 			)
@@ -98,14 +127,24 @@ export default class MerchantService {
 			throw new Error(DBError)
 		}
 
-		const addressData: IAddress = {
-			...address,
+		const physicalAddressData: IAddress = {
+			...physicalAddress,
 			archived: false,
 			createdAt: new Date(Date.now()),
 			dateArchived: null,
 			updatedAt: null,
-			uuid: resultAddressId[0],
+			uuid: resultPhysicalAddressId[0],
 		}
+
+		const corporateAddressData: IAddress = {
+			...corporateAddress,
+			archived: false,
+			createdAt: new Date(Date.now()),
+			dateArchived: null,
+			updatedAt: null,
+			uuid: resultCorporateAddressId[0],
+		}
+
 		const businessInformationData: IBusinessInformation = {
 			...businessInformation,
 			archived: false,
@@ -115,7 +154,11 @@ export default class MerchantService {
 			uuid: resultBusinessInformationId[0],
 		}
 
-		return { addressData, businessInformationData }
+		return {
+			physicalAddressData,
+			corporateAddressData,
+			businessInformationData,
+		}
 	}
 
 	public async storeMerchant(merchant: IMerchantDto): Promise<any> {
