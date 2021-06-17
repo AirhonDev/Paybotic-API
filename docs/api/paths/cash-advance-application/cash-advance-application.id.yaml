@@ -3,7 +3,7 @@ get:
   - Cash Advance Application
   description: Retrieve a cash advance application by Id
   parameters:
-      - in: query
+      - in: path
         name: cashAdvanceApplicationId
         required: true
         schema:

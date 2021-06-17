@@ -65,7 +65,7 @@ export class Controller {
 		let result
 		try {
 			result = await CashAdvanceApplicationService.retrieveCashAdvanceApplicationById(
-				req.query,
+				req.params,
 			)
 		} catch (error) {
 			return next(error)
@@ -77,6 +77,19 @@ export class Controller {
 				result,
 			),
 		)
+	}
+
+	public async approveCashAdvanceApplication(
+		req: any,
+		res: Response,
+		next: NextFunction,
+	): Promise<Response | void> {
+		const METHOD = '[approveCashAdvanceApplication]'
+		log.info(`${TAG} ${METHOD}`)
+		try {
+		} catch (error) {
+			return next(error)
+		}
 	}
 }
 

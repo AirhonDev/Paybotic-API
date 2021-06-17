@@ -33,7 +33,10 @@ export default class SettlementService {
 				condition,
 			)
 			const merchantIds = map(results, 'merchant_id')
-			terminals = await this._merchantTerminalRepository.findManyByWhereIn('merchant_id', merchantIds)
+			terminals = await this._merchantTerminalRepository.findManyByWhereIn(
+				'merchant_id',
+				merchantIds,
+			)
 		} catch (DBError) {
 			throw new Error(DBError)
 		}

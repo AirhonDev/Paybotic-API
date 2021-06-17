@@ -3,7 +3,7 @@ get:
   - Merchant
   description: Retrieve a merchant by Id
   parameters:
-      - in: query
+      - in: path
         name: merchantId
         required: true
         schema:
