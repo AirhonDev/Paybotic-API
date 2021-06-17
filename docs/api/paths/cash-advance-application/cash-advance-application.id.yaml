@@ -15,3 +15,33 @@ get:
     200:
       description: Returns all examples
       content: {}
+
+put:
+  tags:
+  - Cash Advance Application
+  description: Retrieve a cash advance application by Id
+  parameters:
+      - in: path
+        name: cashAdvanceApplicationId
+        required: true
+        schema:
+          type: number
+          example: 1
+        description: Enter Cash Advance Application Id
+  requestBody:
+    description: Provide cash advance application details
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              description: Enter Status
+              example: approved
+          required:
+            - status
+  responses:
+    200:
+      description: Returns Updated Merchant Status
+      content: {}

@@ -143,5 +143,26 @@ export default class CashAdvanceApplicationService {
 		return cashAdvanceApplicationResult
 	}
 
-	
+	public async approveCashAdvanceApplication(params, body): Promise<any> {
+		let cashAdvanceApplicationResult
+		try {
+			const condition = {
+				uuid: params.cashAdvanceApplicationId,
+			}
+			const updateValues = {
+				status: body.status,
+			}
+			await this._cashAdvanceApplicationRepository.updateOneByCondition(
+				condition,
+				updateValues,
+			)
+
+			cashAdvanceApplicationResult = await this._cashAdvanceApplicationRepository.findOneByUuid(
+				params.cashAdvanceApplicationId,
+			)
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
+		return cashAdvanceApplicationResult
+	}
 }

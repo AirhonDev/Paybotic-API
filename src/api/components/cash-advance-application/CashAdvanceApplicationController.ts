@@ -86,10 +86,24 @@ export class Controller {
 	): Promise<Response | void> {
 		const METHOD = '[approveCashAdvanceApplication]'
 		log.info(`${TAG} ${METHOD}`)
+		const { CashAdvanceApplicationService } = req.container.cradle
+		let result
+
 		try {
+			result = await CashAdvanceApplicationService.approveCashAdvanceApplication(
+				req.params,
+				req.body,
+			)
 		} catch (error) {
 			return next(error)
 		}
+
+		return res.send(
+			new CreateSucess(
+				`Cash advance application Successfully Approved`,
+				result,
+			),
+		)
 	}
 }
 
