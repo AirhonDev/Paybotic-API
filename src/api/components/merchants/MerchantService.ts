@@ -279,7 +279,7 @@ export default class MerchantService {
 			)
 
 			businessIformationResult = await this._businessInformationRepository.findOneByUuid(
-				merchantResult.physical_address_id,
+				merchantResult.business_information_id,
 			)
 
 			corporateAddressResult = physicalAddressResult
