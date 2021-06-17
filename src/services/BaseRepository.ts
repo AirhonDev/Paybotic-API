@@ -154,9 +154,33 @@ export default abstract class {
 		}
 	}
 
-	public async findOneByCondition(uuid): Promise<any> {
+	public async findOneByUuid(uuid): Promise<any> {
 		try {
-			return this.manager(this.table).where('uuid', uuid)
+			return this.manager(this.table).where('uuid', uuid).first()
+		} catch (SQLError) {
+			throw new Error(SQLError)
+		}
+	}
+
+	public async findOneByCondition(condition): Promise<any> {
+		try {
+			return this.manager(this.table).where(condition)
+		} catch (SQLError) {
+			throw new Error(SQLError)
+		}
+	}
+
+	public async findManyByOneCondition(condition): Promise<any> {
+		try {
+			return this.manager(this.table).where(condition)
+		} catch (SQLError) {
+			throw new Error(SQLError)
+		}
+	}
+
+	public async findManyByWhereIn(field, value): Promise<any> {
+		try {
+			return this.manager(this.table).whereIn(field, value)
 		} catch (SQLError) {
 			throw new Error(SQLError)
 		}

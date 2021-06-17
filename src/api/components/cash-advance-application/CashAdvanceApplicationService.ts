@@ -133,7 +133,7 @@ export default class CashAdvanceApplicationService {
 	public async retrieveCashAdvanceApplicationById(condition): Promise<any> {
 		let cashAdvanceApplicationResult
 		try {
-			cashAdvanceApplicationResult = await this._cashAdvanceApplicationRepository.findOneByCondition(
+			cashAdvanceApplicationResult = await this._cashAdvanceApplicationRepository.findOneByUuid(
 				condition.cashAdvanceApplicationId,
 			)
 		} catch (DBError) {

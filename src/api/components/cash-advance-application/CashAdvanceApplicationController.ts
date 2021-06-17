@@ -71,7 +71,12 @@ export class Controller {
 			return next(error)
 		}
 
-		return res.send(new CreateSucess(`Cash advance application Successfully Retrieved`, result))
+		return res.send(
+			new CreateSucess(
+				`Cash advance application Successfully Retrieved`,
+				result,
+			),
+		)
 	}
 }
 

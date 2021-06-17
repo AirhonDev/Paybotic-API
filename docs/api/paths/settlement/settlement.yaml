@@ -1,0 +1,8 @@
+post:
+  tags:
+  - Settlement
+  description: Run Settlement Method
+  responses:
+    200:
+      description: Returns all examples
+      content: {}

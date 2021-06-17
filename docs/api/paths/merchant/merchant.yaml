@@ -94,7 +94,7 @@ post:
                   email:
                     type: string
                     description: Merchant Email
-                    example: "Sample Email"
+                    example: "johndoe@example.com"
                   businessName:
                     type: string
                     description: Merchant Business Name
