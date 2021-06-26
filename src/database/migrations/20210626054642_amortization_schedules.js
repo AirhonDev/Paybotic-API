@@ -10,6 +10,7 @@ exports.up = function (knex) {
     t.foreign('cash_advance_application_id').references('uuid').inTable(CASH_ADVANCE_APPLICATION)
     t.decimal('amount', 8, 2)
     t.decimal('actual_amount_paid', 8, 2)
+    t.enu('status', ['pending', 'completed']).index()
     t.dateTime('settlement_date')
     t.timestamps(['created_at', 'updated_at'], [knex.fn.now(), knex.fn.now()])
     t.dateTime('date_archived')
@@ -19,5 +20,5 @@ exports.up = function (knex) {
 };
 
 exports.down = function (knex) {
-
+  return knex.schema.dropTableIfExists(AMORTIZATION_SCHEDULES_TABLE)
 };

@@ -23,7 +23,10 @@ export default class CashAdvanceApplicationService {
 	private readonly _cashAdvanceApplicationRepository: CashAdvanceApplicationRepository
 	private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
 
-	constructor({ CashAdvanceApplicationRepository, AmortizationScheduleRepository }) {
+	constructor({
+		CashAdvanceApplicationRepository,
+		AmortizationScheduleRepository,
+	}) {
 		this._cashAdvanceApplicationRepository = CashAdvanceApplicationRepository
 		this._amortizationScheduleRepository = AmortizationScheduleRepository
 	}
@@ -188,25 +191,30 @@ export default class CashAdvanceApplicationService {
 					.toString()
 					.substring(1, 4)
 
-				const paybackAmount = cashAdvanceApplicationResult.principal_amount + (cashAdvanceApplicationResult.principal_amount * Number(factorRate))
+				const paybackAmount =
+					cashAdvanceApplicationResult.principal_amount +
+					cashAdvanceApplicationResult.principal_amount * Number(factorRate)
 
 				const dailyAmount = Math.round(paybackAmount / Number(numberOfDays))
 
-				await Promise.all(map(inBetweenDays, async (date) => {
-					const amortizationSchedule: IAmortizationSchedule = {
-						archived: false,
-						createdAt: new Date(Date.now()),
-						dateArchived: null,
-						updatedAt: null,
-						uuid: 0,
-						actual_amount_paid: 0,
-						amount: dailyAmount,
-						settlement_date: new Date(date),
-						cash_advance_application_id: cashAdvanceApplicationResult.uuid
-					}
+				await Promise.all(
+					map(inBetweenDays, async (date) => {
+						const amortizationSchedule: IAmortizationSchedule = {
+							archived: false,
+							createdAt: new Date(Date.now()),
+							dateArchived: null,
+							updatedAt: null,
+							uuid: 0,
+							actual_amount_paid: 0,
+							amount: dailyAmount,
+							status: 'pending',
+							settlement_date: new Date(date),
+							cash_advance_application_id: cashAdvanceApplicationResult.uuid,
+						}
 
-					await this.saveAmortizationSchedule(amortizationSchedule)
-				}))
+						await this.saveAmortizationSchedule(amortizationSchedule)
+					}),
+				)
 			}
 		} catch (DBError) {
 			throw new Error(DBError)
@@ -215,18 +223,19 @@ export default class CashAdvanceApplicationService {
 	}
 
 	public async getDaysBetweenDates(startDate, endDate): Promise<any> {
-		const now = startDate.clone(), dates = [];
+		const now = startDate.clone(),
+			dates = []
 
 		while (now.isSameOrBefore(endDate)) {
-			dates.push(now.format('MM/DD/YYYY'));
-			now.add(1, 'days');
+			dates.push(now.format('MM/DD/YYYY'))
+			now.add(1, 'days')
 		}
 
-		return dates;
+		return dates
 	}
 
 	public async saveAmortizationSchedule(
-		amortization: IAmortizationSchedule
+		amortization: IAmortizationSchedule,
 	): Promise<any> {
 		try {
 			await this._amortizationScheduleRepository.insert(amortization)
