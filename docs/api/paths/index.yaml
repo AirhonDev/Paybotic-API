@@ -15,3 +15,6 @@
 
 /settlements:
   $ref: ./settlement/settlement.yaml
+
+/amortization-schedules:
+  $ref: ./amortization-schedule/amortization-schedule.yaml

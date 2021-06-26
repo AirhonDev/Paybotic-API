@@ -1,22 +1,34 @@
 const { CASH_ADVANCE_APPLICATION } = process.env
 
 import log from '@logger'
-import { some, transform } from 'lodash'
+import { some, transform, map } from 'lodash'
+import * as moment from 'moment'
 
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import CashAdvanceApplicationRepository from '@components/cash-advance-application/CashAdvanceApplicationRepository'
+import AmortizationScheduleRepository from '@components/amortization-schedules/AmortizationScheduleRepository'
+
 import {
 	ICashAdvanceApplication,
 	ICashAdvanceApplicationDto,
 } from '@models/cash-advance-application/index'
+import {
+	IAmortizationSchedule,
+	IAmortizationSchedulesDto,
+} from '@models/amortization-schedules/index'
 
 const TAG = '[CashAdvanceApplicationService]'
 
 export default class CashAdvanceApplicationService {
 	private readonly _cashAdvanceApplicationRepository: CashAdvanceApplicationRepository
+	private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
 
-	constructor({ CashAdvanceApplicationRepository }) {
+	constructor({
+		CashAdvanceApplicationRepository,
+		AmortizationScheduleRepository,
+	}) {
 		this._cashAdvanceApplicationRepository = CashAdvanceApplicationRepository
+		this._amortizationScheduleRepository = AmortizationScheduleRepository
 	}
 
 	public async createCashAdvanceApplication(
@@ -152,6 +164,12 @@ export default class CashAdvanceApplicationService {
 			const updateValues = {
 				status: body.status,
 			}
+			cashAdvanceApplicationResult = await this._cashAdvanceApplicationRepository.findOneByUuid(
+				params.cashAdvanceApplicationId,
+			)
+			if (cashAdvanceApplicationResult.status == 'approved')
+				throw new Error('Cash advance application is already approved')
+
 			await this._cashAdvanceApplicationRepository.updateOneByCondition(
 				condition,
 				updateValues,
@@ -160,9 +178,69 @@ export default class CashAdvanceApplicationService {
 			cashAdvanceApplicationResult = await this._cashAdvanceApplicationRepository.findOneByUuid(
 				params.cashAdvanceApplicationId,
 			)
+
+			if (cashAdvanceApplicationResult.status == 'approved') {
+				const startDate = moment(cashAdvanceApplicationResult.start_date)
+				const endDate = moment(cashAdvanceApplicationResult.end_date)
+
+				const numberOfDays = endDate.diff(startDate, 'days')
+
+				const inBetweenDays = await this.getDaysBetweenDates(startDate, endDate)
+
+				const factorRate = cashAdvanceApplicationResult.factor_rate
+					.toString()
+					.substring(1, 4)
+
+				const paybackAmount =
+					cashAdvanceApplicationResult.principal_amount +
+					cashAdvanceApplicationResult.principal_amount * Number(factorRate)
+
+				const dailyAmount = Math.round(paybackAmount / Number(numberOfDays))
+
+				await Promise.all(
+					map(inBetweenDays, async (date) => {
+						const amortizationSchedule: IAmortizationSchedule = {
+							archived: false,
+							createdAt: new Date(Date.now()),
+							dateArchived: null,
+							updatedAt: null,
+							uuid: 0,
+							actual_amount_paid: 0,
+							amount: dailyAmount,
+							status: 'pending',
+							settlement_date: new Date(date),
+							cash_advance_application_id: cashAdvanceApplicationResult.uuid,
+						}
+
+						await this.saveAmortizationSchedule(amortizationSchedule)
+					}),
+				)
+			}
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
 		return cashAdvanceApplicationResult
+	}
+
+	public async getDaysBetweenDates(startDate, endDate): Promise<any> {
+		const now = startDate.clone(),
+			dates = []
+
+		while (now.isSameOrBefore(endDate)) {
+			dates.push(now.format('MM/DD/YYYY'))
+			now.add(1, 'days')
+		}
+
+		return dates
+	}
+
+	public async saveAmortizationSchedule(
+		amortization: IAmortizationSchedule,
+	): Promise<any> {
+		try {
+			await this._amortizationScheduleRepository.insert(amortization)
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
 	}
 }
