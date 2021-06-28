@@ -195,7 +195,12 @@ export default class CashAdvanceApplicationService {
 					cashAdvanceApplicationResult.principal_amount +
 					cashAdvanceApplicationResult.principal_amount * Number(factorRate)
 
-				const dailyAmount = Math.round(paybackAmount / Number(numberOfDays))
+				const principalAmount = cashAdvanceApplicationResult.principal_amount / Number(numberOfDays)
+
+				const factoringFees = principalAmount * Number(factorRate)
+
+				// const dailyAmount = Math.round(paybackAmount / Number(numberOfDays))
+				const dailyAmount = principalAmount + factoringFees
 
 				await Promise.all(
 					map(inBetweenDays, async (date) => {
@@ -206,7 +211,9 @@ export default class CashAdvanceApplicationService {
 							updatedAt: null,
 							uuid: 0,
 							actual_amount_paid: 0,
-							amount: dailyAmount,
+							principal_amount: principalAmount,
+							factoring_fees: factoringFees,
+							total_daily_repayment: dailyAmount,
 							status: 'pending',
 							settlement_date: new Date(date),
 							cash_advance_application_id: cashAdvanceApplicationResult.uuid,
