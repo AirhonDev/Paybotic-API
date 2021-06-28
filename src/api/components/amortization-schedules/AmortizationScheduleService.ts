@@ -33,12 +33,18 @@ export default class AmortizationScheduleService {
 		const postCols = [
 			`${AMORTIZATION_SCHEDULES_TABLE}.uuid`,
 			`${AMORTIZATION_SCHEDULES_TABLE}.created_at`,
+			`${AMORTIZATION_SCHEDULES_TABLE}.settlement_date`,
 		]
 		const actualCols = [
 			{
 				table: AMORTIZATION_SCHEDULES_TABLE,
 				col: 'created_at',
 				name: 'created_at',
+			},
+			{
+				table: AMORTIZATION_SCHEDULES_TABLE,
+				col: 'settlement_date',
+				name: 'settlement_date',
 			},
 		]
 

@@ -195,11 +195,11 @@ export default class CashAdvanceApplicationService {
 					cashAdvanceApplicationResult.principal_amount +
 					cashAdvanceApplicationResult.principal_amount * Number(factorRate)
 
-				const principalAmount = cashAdvanceApplicationResult.principal_amount / Number(numberOfDays)
+				const principalAmount =
+					cashAdvanceApplicationResult.principal_amount / Number(numberOfDays)
 
 				const factoringFees = principalAmount * Number(factorRate)
 
-				// const dailyAmount = Math.round(paybackAmount / Number(numberOfDays))
 				const dailyAmount = principalAmount + factoringFees
 
 				await Promise.all(
