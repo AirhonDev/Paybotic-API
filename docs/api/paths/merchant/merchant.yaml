@@ -150,6 +150,18 @@ post:
                     type: string
                     description: Merchant Bank Name
                     example: "Sample Bank Name"
+                  bankType:
+                    type: string
+                    description: Merchant Bank Type
+                    example: "Sample Bank Type"
+                  salesAgent1:
+                    type: string
+                    description: Merchant Sales Agent 1
+                    example: "Sample Sales Agent 1"
+                  salesAgent2:
+                    type: string
+                    description: Merchant Sales Agent 2
+                    example: "Sample Sales Agent 2"
                   bankAccountNumber:
                     type: string
                     description: Merchant Account Number
