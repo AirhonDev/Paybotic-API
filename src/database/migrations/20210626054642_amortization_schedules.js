@@ -1,11 +1,14 @@
 const {
   AMORTIZATION_SCHEDULES_TABLE,
+  MERCHANT_TABLE,
   CASH_ADVANCE_APPLICATION
 } = process.env
 
 exports.up = function (knex) {
   return knex.schema.createTable(AMORTIZATION_SCHEDULES_TABLE, (t) => {
     t.increments('uuid').primary()
+    t.integer('merchant_id').unsigned()
+    t.foreign('merchant_id').references('uuid').inTable(MERCHANT_TABLE)
     t.integer('cash_advance_application_id').unsigned()
     t.foreign('cash_advance_application_id').references('uuid').inTable(CASH_ADVANCE_APPLICATION)
     t.decimal('principal_amount', 8, 2)

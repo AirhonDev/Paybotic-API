@@ -206,17 +206,18 @@ export default class CashAdvanceApplicationService {
 					map(inBetweenDays, async (date) => {
 						const amortizationSchedule: IAmortizationSchedule = {
 							archived: false,
+							merchantId: cashAdvanceApplicationResult.merchant_id,
 							createdAt: new Date(Date.now()),
 							dateArchived: null,
 							updatedAt: null,
 							uuid: 0,
-							actual_amount_paid: 0,
-							principal_amount: principalAmount,
-							factoring_fees: factoringFees,
-							total_daily_repayment: dailyAmount,
+							actualAmountPaid: 0,
+							principalAmount: principalAmount,
+							factoringFees: factoringFees,
+							totalDailyRepayment: dailyAmount,
 							status: 'pending',
 							settlement_date: new Date(date),
-							cash_advance_application_id: cashAdvanceApplicationResult.uuid,
+							cashAdvanceApplicationId: cashAdvanceApplicationResult.uuid,
 						}
 
 						await this.saveAmortizationSchedule(amortizationSchedule)
