@@ -2,6 +2,7 @@ import { asClass, Lifetime, AwilixContainer } from 'awilix'
 import l from '@logger'
 
 import PostService from '@components/posts/PostService'
+import SilaMoneyApiService from '@services/SilaMoneyApiService'
 import MerchantService from '@components/merchants/MerchantService'
 import CashAdvanceApplicationService from '@components/cash-advance-application/CashAdvanceApplicationService'
 // import BusinessInformationService from '@components/business-informations/BusinessInformationService'
@@ -16,6 +17,7 @@ const SERVICES = [
 	PaymentDashboardApiService,
 	SettlementService,
 	AmortizationScheduleService,
+	SilaMoneyApiService,
 ]
 
 export default (container: AwilixContainer): void => {

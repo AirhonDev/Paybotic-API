@@ -6,6 +6,7 @@ import { some, transform, mapValues, take, map, remove } from 'lodash'
 
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import MerchantRepository from '@components/merchants/MerchantRepository'
+import SilaMoneyApiService from '@services/SilaMoneyApiService'
 import AddressRepository from '@components/addresses/AddressRepository'
 import BusinessInformationRepository from '@components/business-informations/BusinessInformationRepository'
 import MerchantTerminalRepository from '@components/merchant-terminals/MerchantTerminalRepository'
@@ -28,9 +29,11 @@ export default class MerchantService {
 	private readonly _addressRepository: AddressRepository
 	private readonly _businessInformationRepository: BusinessInformationRepository
 	private readonly _merchantTerminalRepository: MerchantTerminalRepository
+	private readonly _silaMoneyService: SilaMoneyApiService
 
 	constructor({
 		MerchantRepository,
+		SilaMoneyApiService,
 		AddressRepository,
 		BusinessInformationRepository,
 		MerchantTerminalRepository,
@@ -39,6 +42,7 @@ export default class MerchantService {
 		this._merchantRepository = MerchantRepository
 		this._businessInformationRepository = BusinessInformationRepository
 		this._merchantTerminalRepository = MerchantTerminalRepository
+		this._silaMoneyService = SilaMoneyApiService
 	}
 
 	public async createMerchant(
@@ -86,6 +90,43 @@ export default class MerchantService {
 		merchantInformationData = await this.storeMerchant(
 			merchantInformationPayload,
 		)
+
+		const newIndividualUser = {
+			handle: 'user.merchant.paybotic' + merchantInformationData.uuid,
+			firstName: businessInformationPayload.owner1FirstName,
+			lastName: businessInformationPayload.owner1LastName,
+			address: physicalAddressPayload.streetAddress,
+			city: physicalAddressPayload.city,
+			state: physicalAddressPayload.state,
+			zip: physicalAddressPayload.zipCode,
+			phone: physicalAddressPayload.phoneNumber,
+			email: merchantInformationData.email,
+			dateOfBirth: '1990-01-01',
+			ssn: businessInformationPayload.idNumber,
+		}
+
+		const merchantEntityPayload = {
+			merchantId: merchantInformationData.uuid,
+			merchantHandle: newIndividualUser.handle,
+			...createdAt,
+		}
+
+		console.log(newIndividualUser)
+		await this._silaMoneyService.createuserEntities(
+			newIndividualUser,
+			merchantEntityPayload,
+		)
+		await this._silaMoneyService.requestKyc(newIndividualUser)
+
+		const bankAccountInformation = {
+			userHandle: newIndividualUser.handle,
+			accountNumber: merchantInformationData.bankAccountNumber,
+			routingNumber: merchantInformationData.bankAccountRountingNumber,
+			accountType: 'CHECKING',
+			accountName: merchantInformationData.name,
+		}
+
+		await this._silaMoneyService.storeBankAccount(bankAccountInformation)
 
 		return { merchantInfoResult, merchantInformationData }
 	}

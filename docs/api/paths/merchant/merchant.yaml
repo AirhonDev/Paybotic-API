@@ -23,11 +23,11 @@ post:
                 state:
                   type: string
                   description: Merchant State
-                  example: "Sample State"
+                  example: "NY"
                 zipCode:
                   type: string
                   description: Merchant Zip Code
-                  example: "Sample zip code"
+                  example: "12345"
                 country:
                   type: string
                   description: Merchant Country
@@ -35,7 +35,7 @@ post:
                 phoneNumber:
                   type: string
                   description: Merchant Phone Number
-                  example: "Sample Phone Number"
+                  example: "9054335351"
                 faxNumber:
                   type: string
                   description: Merchant Fax Number
@@ -105,7 +105,7 @@ post:
                   idNumber:
                     type: string
                     description: Merchant Id Number
-                    example: "Sample Id Number 123345"
+                    example: "123456222"
                   tinType:
                     type: string
                     enum: [ein, ssn]
@@ -153,7 +153,7 @@ post:
                   bankType:
                     type: string
                     description: Merchant Bank Type
-                    example: "Sample Bank Type"
+                    example: "CHECKING"
                   salesAgent1:
                     type: string
                     description: Merchant Sales Agent 1
@@ -165,11 +165,11 @@ post:
                   bankAccountNumber:
                     type: string
                     description: Merchant Account Number
-                    example: "312312424124"
+                    example: "123456789012"
                   bankAccountRountingNumber:
                     type: string
                     description: Merchant Bank ACcount Routing Number
-                    example: "341256348"
+                    example: "123456789"
                       
   responses:
     200:
