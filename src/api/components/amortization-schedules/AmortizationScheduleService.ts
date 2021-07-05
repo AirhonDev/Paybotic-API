@@ -1,4 +1,7 @@
-const { AMORTIZATION_SCHEDULES_TABLE } = process.env
+const {
+	AMORTIZATION_SCHEDULES_TABLE,
+	CASH_ADVANCE_PAYMENTS_TABLE,
+} = process.env
 
 import log from '@logger'
 import * as moment from 'moment'
@@ -14,7 +17,10 @@ export default class AmortizationScheduleService {
 	private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
 	private readonly _cashAdvancePaymentsRepository: CashAdvancePaymentsRepository
 
-	constructor({ AmortizationScheduleRepository, CashAdvancePaymentsRepository }) {
+	constructor({
+		AmortizationScheduleRepository,
+		CashAdvancePaymentsRepository,
+	}) {
 		this._amortizationScheduleRepository = AmortizationScheduleRepository
 		this._cashAdvancePaymentsRepository = CashAdvancePaymentsRepository
 	}
@@ -69,14 +75,14 @@ export default class AmortizationScheduleService {
 			}
 		}
 
-		// const populate = [
-		// 	{
-		// 		table: '<ANOTHER TABLE>',
-		// 		firstTableProp: 'uuid',
-		// 		secondTableProp: 'uuid',
-		// 		nameAs: 'namedProperty',
-		// 	},
-		// ]
+		const populate = [
+			{
+				table: CASH_ADVANCE_PAYMENTS_TABLE,
+				firstTableProp: 'uuid',
+				secondTableProp: 'amortization_schedule_id',
+				nameAs: 'payments',
+			},
+		]
 
 		let queryResult
 
@@ -95,22 +101,19 @@ export default class AmortizationScheduleService {
 				condQuery,
 				pagination,
 				orderQuery,
-				// populate,
+				populate,
 			)
 
 			queryResult = {
 				...queryResult.totalCount,
-				data: await Promise.all(map(queryResult.data, async (result) => {
-					const newCollection = {
-						...result,
-						payments: await this._cashAdvancePaymentsRepository.findOneByCondition({
-							amortization_schedule_id: result.uuid
-						})
-					}
-					return newCollection
-				}))
-			}
+				data: await Promise.all(
+					map(queryResult.data, async (result) => {
+						result.payments = JSON.parse(result.payments)
 
+						return result
+					}),
+				),
+			}
 		} catch (DBError) {
 			log.error(`${TAG} ${DBError}`)
 			throw new Error(DBError)
