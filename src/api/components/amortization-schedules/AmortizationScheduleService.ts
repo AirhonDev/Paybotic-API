@@ -5,15 +5,18 @@ import * as moment from 'moment'
 import { some, transform, map } from 'lodash'
 
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
+import CashAdvancePaymentsRepository from '@components/cash-advance-payments/CashAdvancePaymentsRepository'
 import AmortizationScheduleRepository from '@components/amortization-schedules/AmortizationScheduleRepository'
 
 const TAG = '[AmortizationScheduleService]'
 
 export default class AmortizationScheduleService {
 	private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
+	private readonly _cashAdvancePaymentsRepository: CashAdvancePaymentsRepository
 
-	constructor({ AmortizationScheduleRepository }) {
+	constructor({ AmortizationScheduleRepository, CashAdvancePaymentsRepository }) {
 		this._amortizationScheduleRepository = AmortizationScheduleRepository
+		this._cashAdvancePaymentsRepository = CashAdvancePaymentsRepository
 	}
 
 	public async retrieveListOfAmortizationSchedules(condition): Promise<any> {
@@ -94,6 +97,20 @@ export default class AmortizationScheduleService {
 				orderQuery,
 				// populate,
 			)
+
+			queryResult = {
+				...queryResult.totalCount,
+				data: await Promise.all(map(queryResult.data, async (result) => {
+					const newCollection = {
+						...result,
+						payments: await this._cashAdvancePaymentsRepository.findOneByCondition({
+							amortization_schedule_id: result.uuid
+						})
+					}
+					return newCollection
+				}))
+			}
+
 		} catch (DBError) {
 			log.error(`${TAG} ${DBError}`)
 			throw new Error(DBError)
