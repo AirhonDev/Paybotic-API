@@ -42,6 +42,7 @@ export default class SettlementService {
 		let results
 		let terminals
 		let dailySales
+		let latest
 		let dailyInvoiceDashboard
 		try {
 			const condition = {
@@ -55,10 +56,9 @@ export default class SettlementService {
 			let lastPayment
 			let merchantTerminals
 			let cashAdvance
-			let latest
 			let remainingPrincipal
 			let remainingTotalBalance
-			await Promise.all(
+			latest = await Promise.all(
 				map(results, async (result) => {
 					const merchantCondition = {
 						merchant_id: result.merchant_id,
@@ -76,7 +76,7 @@ export default class SettlementService {
 					await Promise.all(map(merchantTerminals, async (terminal) => {
 						dailyInvoiceDashboard = await this._paymentDashboardApiService.retrieveTerminal(
 							terminal.terminal_api_id.toString(),
-							moment().subtract(10, 'days').format('YYYY-MM-DD'),
+							moment().subtract(1, 'days').format('YYYY-MM-DD'),
 							'settlement_date',
 						)
 
@@ -134,11 +134,22 @@ export default class SettlementService {
 					await this._cashAdvancePaymentsRepository.insert(
 						cashAdvancePaymentsPayload,
 					)
+
+					const updateCondition = {
+						uuid: result.uuid
+					}
+					const updatePayload = {
+						actual_amount_paid: result.actual_amount_paid + withHoldingAmount,
+						status: result.total_daily_repayment > result.actual_amount_paid + withHoldingAmount ? 'partial' : 'completed'
+					}
+
+					this._amortizationScheduleRepository.updateOneByCondition(updateCondition, updatePayload)
+					return cashAdvancePaymentsPayload
 				}),
 			)
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
-		return results
+		return latest
 	}
 }
