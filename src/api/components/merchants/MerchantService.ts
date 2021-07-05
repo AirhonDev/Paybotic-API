@@ -413,7 +413,7 @@ export default class MerchantService {
 				condition,
 			)
 
-			if (!exisitingTerminal.length) {
+			if (!exisitingTerminal) {
 				const merchantTerminalPayload: IMerchantTerminal = {
 					merchant_id: merchantId,
 					terminal_api_id: terminal.id,

@@ -164,7 +164,7 @@ export default abstract class {
 
 	public async findOneByCondition(condition): Promise<any> {
 		try {
-			return this.manager(this.table).where(condition)
+			return this.manager(this.table).where(condition).first()
 		} catch (SQLError) {
 			throw new Error(SQLError)
 		}
