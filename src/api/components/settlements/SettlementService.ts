@@ -51,13 +51,22 @@ export default class SettlementService {
 				condition,
 			)
 
+			let lastPayment
 			let merchantTerminal
 			let cashAdvance
+			let latest
+			let remainingPrincipal
+			let remainingTotalBalance
 			await Promise.all(
 				map(results, async (result) => {
 					const merchantCondition = {
-						merchant_id: result.uuid,
+						merchant_id: result.merchant_id,
 					}
+					const lastPaymentCondition = {
+						cash_advance_application_id: result.cash_advance_application_id
+					}
+					lastPayment = await this._cashAdvancePaymentsRepository.latestWithCondition(lastPaymentCondition, 'uuid')
+
 					merchantTerminal = await this._merchantTerminalRepository.findOneByCondition(
 						merchantCondition,
 					)
@@ -69,8 +78,9 @@ export default class SettlementService {
 					)
 
 					const dailySalesConverted = Number(
-						dailySales.dateTotal.cash_disp.substring(1),
+						dailySales.dateTotal.cash_disp.substring(1).replace(/\,/g, ''),
 					)
+
 					cashAdvance = await this._cashAdvanceApplicationRepository.findOneByUuid(
 						result.cash_advance_application_id,
 					)
@@ -83,10 +93,17 @@ export default class SettlementService {
 						cashAdvance.principal_amount * Number(factorRate)
 					const principalAmount = withHoldingAmount - factoringFees
 
-					const remainingPrincipal =
+					remainingPrincipal =
 						cashAdvance.principal_amount - principalAmount
-					const remainingTotalBalance = paybackAmount - withHoldingAmount
+					remainingTotalBalance = paybackAmount - withHoldingAmount
 
+					if (lastPayment) {
+						remainingPrincipal =
+							lastPayment.remaining_principal - principalAmount
+
+						remainingTotalBalance =
+							lastPayment.remaining_total_balance - withHoldingAmount
+					}
 					console.log(dailySalesConverted)
 					console.log(withHoldingAmount)
 					console.log(factoringFees)
