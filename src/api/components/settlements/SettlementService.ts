@@ -42,6 +42,7 @@ export default class SettlementService {
 		let results
 		let terminals
 		let dailySales
+		let dailyInvoiceDashboard
 		try {
 			const condition = {
 				settlement_date: moment().format('YYYY-MM-DD'),
@@ -52,7 +53,7 @@ export default class SettlementService {
 			)
 
 			let lastPayment
-			let merchantTerminal
+			let merchantTerminals
 			let cashAdvance
 			let latest
 			let remainingPrincipal
@@ -67,26 +68,30 @@ export default class SettlementService {
 					}
 					lastPayment = await this._cashAdvancePaymentsRepository.latestWithCondition(lastPaymentCondition, 'uuid')
 
-					merchantTerminal = await this._merchantTerminalRepository.findOneByCondition(
+					merchantTerminals = await this._merchantTerminalRepository.findManyByOneCondition(
 						merchantCondition,
 					)
 
-					dailySales = await this._paymentDashboardApiService.retrieveTerminal(
-						merchantTerminal.terminal_api_id.toString(),
-						moment().subtract(10, 'days').format('YYYY-MM-DD'),
-						'settlement_date',
-					)
+					dailySales = 0
+					await Promise.all(map(merchantTerminals, async (terminal) => {
+						dailyInvoiceDashboard = await this._paymentDashboardApiService.retrieveTerminal(
+							terminal.terminal_api_id.toString(),
+							moment().subtract(10, 'days').format('YYYY-MM-DD'),
+							'settlement_date',
+						)
 
-					const dailySalesConverted = Number(
-						dailySales.dateTotal.cash_disp.substring(1).replace(/\,/g, ''),
-					)
+						console.log(dailyInvoiceDashboard.dateTotal.cash_disp)
+						dailySales += Number(
+							dailyInvoiceDashboard.dateTotal.cash_disp.substring(1).replace(/\,/g, ''),
+						)
+					}))
 
 					cashAdvance = await this._cashAdvanceApplicationRepository.findOneByUuid(
 						result.cash_advance_application_id,
 					)
 					const factorRate = cashAdvance.factor_rate.toString().substring(1, 4)
 
-					const withHoldingAmount = dailySalesConverted * Number(factorRate)
+					const withHoldingAmount = dailySales * Number(factorRate)
 					const factoringFees = withHoldingAmount * Number(factorRate)
 					const paybackAmount =
 						cashAdvance.principal_amount +
@@ -104,7 +109,7 @@ export default class SettlementService {
 						remainingTotalBalance =
 							lastPayment.remaining_total_balance - withHoldingAmount
 					}
-					console.log(dailySalesConverted)
+					console.log(dailySales)
 					console.log(withHoldingAmount)
 					console.log(factoringFees)
 					console.log(principalAmount)
@@ -115,7 +120,7 @@ export default class SettlementService {
 						cashAdvanceApplicationId: result.cash_advance_application_id,
 						amortizationScheduleId: result.uuid,
 						merchantId: result.merchant_id,
-						dailySales: dailySalesConverted,
+						dailySales: dailySales,
 						withHoldingAmount,
 						principalAmount,
 						factoringFees,
