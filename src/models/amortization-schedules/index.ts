@@ -1,8 +1,11 @@
 export interface IAmortizationSchedule {
 	uuid: number
-	cash_advance_application_id: number
-	amount: number
-	actual_amount_paid: number
+	cashAdvanceApplicationId: number
+	merchantId: number
+	principalAmount: number
+	factoringFees: number
+	totalDailyRepayment: number
+	actualAmountPaid: number
 	status: string
 	settlement_date: Date
 	createdAt: Date

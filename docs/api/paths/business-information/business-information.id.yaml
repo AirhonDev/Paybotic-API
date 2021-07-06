@@ -1,0 +1,72 @@
+put:
+  tags:
+  - Business Information
+  description: Update Merchant By Id
+  parameters:
+      - in: path
+        name: businessInformationId
+        required: true
+        schema:
+          type: number
+          example: 1
+        description: Enter Business Information Id
+  requestBody:
+    description: Provide business information details
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            owner1FirstName:
+              type: string
+              description: Merchant Owner First Name
+              example: "Owner John"
+            owner1LastName:
+              type: string
+              description: Merchant Owner Last Name
+              example: "Owner Doe"
+            owner2FirstName:
+              type: string
+              description: Merchant Owner 2 First Name
+              example: "Owner 1 John"
+            owner2LastName:
+              type: string
+              description: Merchant Owner 2 Last Name
+              example: "Owner 2 Doe"
+            title:
+              type: string
+              description: Merchant Primary Contact Name
+              example: "Sample Job Title"
+            primaryContactName:
+              type: string
+              description: Merchant Primary Contact Name
+              example: "Sample Contact Name"
+            idNumber:
+              type: string
+              description: Merchant Id Number
+              example: "123456222"
+            tinType:
+              type: string
+              enum: [ein, ssn]
+              description: Merchant Tin type
+              example: "ein"
+            businessLicense:
+              type: string
+              description: Merchant Business License
+              example: "Sample Business License"
+            businessLicenseState:
+              type: string
+              description: Merchant Business License
+              example: "Sample Business License"
+            numberOfLocations:
+              type: number
+              description: Merchant Number of Locations
+              example: 4
+            businessFormationDate:
+              type: string
+              description: Merchant Business Formation Date
+              example: "2021-06-02 01:57:14"
+  responses:
+    200:
+      description: Returns all examples
+      content: {}

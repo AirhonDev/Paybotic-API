@@ -18,3 +18,15 @@
 
 /amortization-schedules:
   $ref: ./amortization-schedule/amortization-schedule.yaml
+
+/cash-advance-payments:
+  $ref: ./cash-advance-payment/cash-advance-payment.yaml
+
+/cash-advance-balances/{cashAdvanceApplicationId}:
+  $ref: ./cash-advance-balance/cash-advance-balance.id.yaml
+
+/business-informations/{businessInformationId}:
+  $ref: ./business-information/business-information.id.yaml
+
+/addresses/{addressId}:
+  $ref: ./address/address.id.yaml

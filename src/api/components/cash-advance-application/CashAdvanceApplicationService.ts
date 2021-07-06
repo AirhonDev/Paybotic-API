@@ -7,11 +7,17 @@ import * as moment from 'moment'
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import CashAdvanceApplicationRepository from '@components/cash-advance-application/CashAdvanceApplicationRepository'
 import AmortizationScheduleRepository from '@components/amortization-schedules/AmortizationScheduleRepository'
+import CashAdvanceBalanceRepository from '@components/cash-advance-balances/CashAdvanceBalanceRepository'
 
 import {
 	ICashAdvanceApplication,
 	ICashAdvanceApplicationDto,
 } from '@models/cash-advance-application/index'
+import {
+	ICashAdvanceBalance,
+	ICashAdvanceBalanceDto,
+} from '@models/cash-advance-balances/index'
+
 import {
 	IAmortizationSchedule,
 	IAmortizationSchedulesDto,
@@ -22,13 +28,16 @@ const TAG = '[CashAdvanceApplicationService]'
 export default class CashAdvanceApplicationService {
 	private readonly _cashAdvanceApplicationRepository: CashAdvanceApplicationRepository
 	private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
+	private readonly _cashAdvanceBalanceRepository: CashAdvanceBalanceRepository
 
 	constructor({
 		CashAdvanceApplicationRepository,
 		AmortizationScheduleRepository,
+		CashAdvanceBalanceRepository,
 	}) {
 		this._cashAdvanceApplicationRepository = CashAdvanceApplicationRepository
 		this._amortizationScheduleRepository = AmortizationScheduleRepository
+		this._cashAdvanceBalanceRepository = CashAdvanceBalanceRepository
 	}
 
 	public async createCashAdvanceApplication(
@@ -44,7 +53,9 @@ export default class CashAdvanceApplicationService {
 		}
 
 		try {
-			await this._cashAdvanceApplicationRepository.insert(mcaPayload)
+			const cashAdvanceId = await this._cashAdvanceApplicationRepository.insert(
+				mcaPayload,
+			)
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
@@ -167,8 +178,8 @@ export default class CashAdvanceApplicationService {
 			cashAdvanceApplicationResult = await this._cashAdvanceApplicationRepository.findOneByUuid(
 				params.cashAdvanceApplicationId,
 			)
-			if (cashAdvanceApplicationResult.status == 'approved')
-				throw new Error('Cash advance application is already approved')
+			if (body.status == cashAdvanceApplicationResult.status)
+				throw new Error('Cash advance application is already' + body.status)
 
 			await this._cashAdvanceApplicationRepository.updateOneByCondition(
 				condition,
@@ -179,43 +190,91 @@ export default class CashAdvanceApplicationService {
 				params.cashAdvanceApplicationId,
 			)
 
-			if (cashAdvanceApplicationResult.status == 'approved') {
-				const startDate = moment(cashAdvanceApplicationResult.start_date)
-				const endDate = moment(cashAdvanceApplicationResult.end_date)
+			const exisiting = await this._amortizationScheduleRepository.findOneByCondition({
+				cash_advance_application_id: params.cashAdvanceApplicationId
+			})
 
-				const numberOfDays = endDate.diff(startDate, 'days')
+			if (!exisiting) {
+				if (cashAdvanceApplicationResult.status == 'approved') {
+					const startDate = moment(cashAdvanceApplicationResult.start_date)
+					const endDate = moment(cashAdvanceApplicationResult.end_date)
 
-				const inBetweenDays = await this.getDaysBetweenDates(startDate, endDate)
+					const inBetweenDays = await this.getDaysBetweenDates(startDate, endDate)
 
-				const factorRate = cashAdvanceApplicationResult.factor_rate
-					.toString()
-					.substring(1, 4)
+					const numberOfDays = inBetweenDays.length
 
-				const paybackAmount =
-					cashAdvanceApplicationResult.principal_amount +
-					cashAdvanceApplicationResult.principal_amount * Number(factorRate)
+					console.log(numberOfDays)
+					const factorRate = cashAdvanceApplicationResult.factor_rate
+						.toString()
+						.substring(1, 4)
 
-				const dailyAmount = Math.round(paybackAmount / Number(numberOfDays))
+					const paybackAmount =
+						cashAdvanceApplicationResult.principal_amount +
+						cashAdvanceApplicationResult.principal_amount * Number(factorRate)
 
-				await Promise.all(
-					map(inBetweenDays, async (date) => {
-						const amortizationSchedule: IAmortizationSchedule = {
-							archived: false,
-							createdAt: new Date(Date.now()),
-							dateArchived: null,
-							updatedAt: null,
-							uuid: 0,
-							actual_amount_paid: 0,
-							amount: dailyAmount,
-							status: 'pending',
-							settlement_date: new Date(date),
-							cash_advance_application_id: cashAdvanceApplicationResult.uuid,
-						}
+					const principalAmount =
+						cashAdvanceApplicationResult.principal_amount / Number(numberOfDays)
 
-						await this.saveAmortizationSchedule(amortizationSchedule)
-					}),
-				)
+					const factoringFees = principalAmount * Number(factorRate)
+
+					const dailyAmount = principalAmount + factoringFees
+
+					await Promise.all(
+						map(inBetweenDays, async (date) => {
+							const amortizationSchedule: IAmortizationSchedule = {
+								archived: false,
+								merchantId: cashAdvanceApplicationResult.merchant_id,
+								createdAt: new Date(Date.now()),
+								dateArchived: null,
+								updatedAt: null,
+								uuid: 0,
+								actualAmountPaid: 0,
+								principalAmount: principalAmount,
+								factoringFees: factoringFees,
+								totalDailyRepayment: dailyAmount,
+								status: 'pending',
+								settlement_date: new Date(date),
+								cashAdvanceApplicationId: cashAdvanceApplicationResult.uuid,
+							}
+
+							await this.saveAmortizationSchedule(amortizationSchedule)
+						}),
+					)
+
+					const cashdvanceBalancePayload: ICashAdvanceBalance = {
+						cashAdvanceApplicationId: cashAdvanceApplicationResult.uuid,
+						merchantId: cashAdvanceApplicationResult.merchant_id,
+						totalRevenue: 0,
+						badDebtExpense: 0,
+						factoringFeesCollected: 0,
+						principalCollected: 0,
+						cashAdvanceTotalRemainingBalance: paybackAmount,
+						createdAt: new Date(Date.now()),
+						updatedAt: new Date(Date.now()),
+						dateArchived: null,
+						archived: false,
+					}
+					const updateConditionCashAdvanceBalance = {
+						cash_advance_application_id: cashAdvanceApplicationResult.uuid,
+					}
+
+					const cashAdvanceBalance = await this._cashAdvanceBalanceRepository.findOneByCondition(
+						updateConditionCashAdvanceBalance,
+					)
+
+					if (!cashAdvanceBalance) {
+						await this._cashAdvanceBalanceRepository.insert(
+							cashdvanceBalancePayload,
+						)
+					}
+
+					await this.computeAmortizationFee(
+						cashAdvanceApplicationResult,
+						paybackAmount,
+					)
+				}
 			}
+
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
@@ -239,6 +298,56 @@ export default class CashAdvanceApplicationService {
 	): Promise<any> {
 		try {
 			await this._amortizationScheduleRepository.insert(amortization)
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
+	}
+
+	public async computeAmortizationFee(
+		cashAdnvanceApplication,
+		paybackAmount,
+	): Promise<any> {
+		let result
+		let computePrincipalAmount
+		let computeTotalDailyAmount
+		try {
+			const condition = {
+				cash_advance_application_id: cashAdnvanceApplication.uuid,
+			}
+			result = await this._amortizationScheduleRepository.getByOrder(
+				condition,
+				'settlement_date',
+				'asc',
+			)
+
+			computePrincipalAmount = cashAdnvanceApplication.principal_amount
+			computeTotalDailyAmount = paybackAmount
+			console.log(computePrincipalAmount)
+			console.log(computeTotalDailyAmount)
+
+			await Promise.all(
+				map(result, async (data) => {
+					computePrincipalAmount -= data.principal_amount
+					computeTotalDailyAmount -= data.total_daily_repayment
+
+					const condition = {
+						uuid: data.uuid,
+					}
+
+					const updateValues = {
+						remaining_principal:
+							computePrincipalAmount < 1 ? 0 : computePrincipalAmount,
+						remaining_total_balance:
+							computeTotalDailyAmount < 1 ? 0 : computeTotalDailyAmount,
+					}
+					await this._amortizationScheduleRepository.updateOneByCondition(
+						condition,
+						updateValues,
+					)
+				}),
+			)
+
+			console.log(computePrincipalAmount)
 		} catch (DBError) {
 			throw new Error(DBError)
 		}

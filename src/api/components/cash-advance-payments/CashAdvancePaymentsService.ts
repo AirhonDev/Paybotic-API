@@ -1,19 +1,14 @@
-const {
-	AMORTIZATION_SCHEDULES_TABLE,
-	CASH_ADVANCE_PAYMENTS_TABLE,
-} = process.env
+const { CASH_ADVANCE_PAYMENTS_TABLE } = process.env
 
 import log from '@logger'
-import * as moment from 'moment'
 import { some, transform, map } from 'lodash'
-
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
-import CashAdvancePaymentsRepository from '@components/cash-advance-payments/CashAdvancePaymentsRepository'
 import AmortizationScheduleRepository from '@components/amortization-schedules/AmortizationScheduleRepository'
+import CashAdvancePaymentsRepository from '@components/cash-advance-payments/CashAdvancePaymentsRepository'
 
-const TAG = '[AmortizationScheduleService]'
+const TAG = '[CashAdvancePaymentsService]'
 
-export default class AmortizationScheduleService {
+export default class CashAdvancePaymentsService {
 	private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
 	private readonly _cashAdvancePaymentsRepository: CashAdvancePaymentsRepository
 
@@ -25,8 +20,8 @@ export default class AmortizationScheduleService {
 		this._cashAdvancePaymentsRepository = CashAdvancePaymentsRepository
 	}
 
-	public async retrieveListOfAmortizationSchedules(condition): Promise<any> {
-		const METHOD = '[retrieveListOfAmortizationSchedules]'
+	public async retrieveListOfCashAdvancePayments(condition): Promise<any> {
+		const METHOD = '[retrieveListOfCashAdvancePayments]'
 		log.info(`${TAG} ${METHOD}`)
 
 		const {
@@ -40,20 +35,14 @@ export default class AmortizationScheduleService {
 		} = condition
 
 		const postCols = [
-			`${AMORTIZATION_SCHEDULES_TABLE}.uuid`,
-			`${AMORTIZATION_SCHEDULES_TABLE}.created_at`,
-			`${AMORTIZATION_SCHEDULES_TABLE}.settlement_date`,
+			`${CASH_ADVANCE_PAYMENTS_TABLE}.uuid`,
+			`${CASH_ADVANCE_PAYMENTS_TABLE}.created_at`,
 		]
 		const actualCols = [
 			{
-				table: AMORTIZATION_SCHEDULES_TABLE,
+				table: CASH_ADVANCE_PAYMENTS_TABLE,
 				col: 'created_at',
 				name: 'created_at',
-			},
-			{
-				table: AMORTIZATION_SCHEDULES_TABLE,
-				col: 'settlement_date',
-				name: 'settlement_date',
 			},
 		]
 
@@ -75,14 +64,14 @@ export default class AmortizationScheduleService {
 			}
 		}
 
-		const populate = [
-			{
-				table: CASH_ADVANCE_PAYMENTS_TABLE,
-				firstTableProp: 'uuid',
-				secondTableProp: 'amortization_schedule_id',
-				nameAs: 'payments',
-			},
-		]
+		// const populate = [
+		// 	{
+		// 		table: '<ANOTHER TABLE>',
+		// 		firstTableProp: 'uuid',
+		// 		secondTableProp: 'uuid',
+		// 		nameAs: 'namedProperty',
+		// 	},
+		// ]
 
 		let queryResult
 
@@ -97,41 +86,17 @@ export default class AmortizationScheduleService {
 			const condQuery = { ...decoded }
 			if (whereField && whereValue) condQuery[whereField] = whereValue
 
-			queryResult = await this._amortizationScheduleRepository.findManyByCondition(
+			queryResult = await this._cashAdvancePaymentsRepository.findManyByCondition(
 				condQuery,
 				pagination,
 				orderQuery,
-				populate,
+				// populate,
 			)
-
-			queryResult = {
-				...queryResult.totalCount,
-				data: await Promise.all(
-					map(queryResult.data, async (result) => {
-						result.payments = JSON.parse(result.payments)
-
-						return result
-					}),
-				),
-			}
 		} catch (DBError) {
 			log.error(`${TAG} ${DBError}`)
 			throw new Error(DBError)
 		}
 
 		return queryResult
-	}
-
-	public async retrieveAmortizationScheduleById(condition): Promise<any> {
-		let cashAdvanceApplicationResult
-		try {
-			cashAdvanceApplicationResult = await this._amortizationScheduleRepository.findOneByUuid(
-				condition.id,
-			)
-		} catch (DBError) {
-			throw new Error(DBError)
-		}
-
-		return cashAdvanceApplicationResult
 	}
 }

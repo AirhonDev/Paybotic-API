@@ -8,6 +8,9 @@ export interface IMerchant {
 	businessInformationId: number
 	businessEntity: string
 	bankName: string
+	bankType: string
+	salesAgent1: string
+	salesAgent2: string
 	bankAccountNumber: string
 	bankAccountRountingNumber: string
 	createdAt: Date
@@ -25,7 +28,10 @@ export interface IMerchantDto {
 	businessInformationId: number
 	businessEntity: string
 	bankName: string
+	bankType: string
 	bankAccountNumber: string
 	bankAccountRountingNumber: string
+	salesAgent1: string
+	salesAgent2: string
 	uuid: number
 }

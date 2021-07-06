@@ -164,7 +164,7 @@ export default abstract class {
 
 	public async findOneByCondition(condition): Promise<any> {
 		try {
-			return this.manager(this.table).where(condition)
+			return this.manager(this.table).where(condition).first()
 		} catch (SQLError) {
 			throw new Error(SQLError)
 		}
@@ -181,6 +181,33 @@ export default abstract class {
 	public async findManyByWhereIn(field, value): Promise<any> {
 		try {
 			return this.manager(this.table).whereIn(field, value)
+		} catch (SQLError) {
+			throw new Error(SQLError)
+		}
+	}
+
+	public async latest(field): Promise<any> {
+		try {
+			return this.manager(this.table).orderBy(field, 'desc').first()
+		} catch (SQLError) {
+			throw new Error(SQLError)
+		}
+	}
+
+	public async latestWithCondition(condition, field): Promise<any> {
+		try {
+			return this.manager(this.table)
+				.where(condition)
+				.orderBy(field, 'desc')
+				.first()
+		} catch (SQLError) {
+			throw new Error(SQLError)
+		}
+	}
+
+	public async getByOrder(condition, field, order) {
+		try {
+			return this.manager(this.table).where(condition).orderBy(field, order)
 		} catch (SQLError) {
 			throw new Error(SQLError)
 		}

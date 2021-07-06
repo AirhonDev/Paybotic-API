@@ -1,0 +1,17 @@
+get:
+  tags:
+  - Cash Advance Balance
+  description: Retrieve a cash advance application by Id
+  parameters:
+      - in: path
+        name: cashAdvanceApplicationId
+        required: true
+        schema:
+          type: number
+          example: 1
+        description: Enter Cash Advance Application Id
+
+  responses:
+    200:
+      description: Returns all examples
+      content: {}
