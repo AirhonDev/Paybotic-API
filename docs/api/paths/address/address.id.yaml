@@ -1,0 +1,51 @@
+put:
+  tags:
+  - Address
+  description: Update Address By Id
+  parameters:
+      - in: path
+        name: addressId
+        required: true
+        schema:
+          type: number
+          example: 1
+        description: Enter Address Id
+  requestBody:
+    description: Provide Address details
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            streetAddress:
+              type: string
+              description: Merchant Address
+              example: "Sample Address"
+            city:
+              type: string
+              description: Merchant City
+              example: "Sample City"
+            state:
+              type: string
+              description: Merchant State
+              example: "NY"
+            zipCode:
+              type: string
+              description: Merchant Zip Code
+              example: "12345"
+            country:
+              type: string
+              description: Merchant Country
+              example: "Sample Country"
+            phoneNumber:
+              type: string
+              description: Merchant Phone Number
+              example: "9054335351"
+            faxNumber:
+              type: string
+              description: Merchant Fax Number
+              example: "Sample Fax Number"
+  responses:
+    200:
+      description: Returns all examples
+      content: {}

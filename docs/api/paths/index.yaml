@@ -27,3 +27,6 @@
 
 /business-informations/{businessInformationId}:
   $ref: ./business-information/business-information.id.yaml
+
+/addresses/{addressId}:
+  $ref: ./address/address.id.yaml
