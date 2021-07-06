@@ -93,7 +93,10 @@ export default class MerchantService {
 		)
 
 		const newIndividualUser = {
-			handle: 'user.merchant.paybotic' + moment().unix() + merchantInformationData.uuid,
+			handle:
+				'user.merchant.paybotic' +
+				moment().unix() +
+				merchantInformationData.uuid,
 			firstName: businessInformationPayload.owner1FirstName,
 			lastName: businessInformationPayload.owner1LastName,
 			address: physicalAddressPayload.streetAddress,

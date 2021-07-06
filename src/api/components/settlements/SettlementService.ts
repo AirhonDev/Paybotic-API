@@ -4,6 +4,8 @@ import CashAdvanceApplicationRepository from '@components/cash-advance-applicati
 import MerchantTerminalRepository from '@components/merchant-terminals/MerchantTerminalRepository'
 import AmortizationScheduleRepository from '@components/amortization-schedules/AmortizationScheduleRepository'
 import CashAdvancePaymentsRepository from '@components/cash-advance-payments/CashAdvancePaymentsRepository'
+import CashAdvanceBalanceRepository from '@components/cash-advance-balances/CashAdvanceBalanceRepository'
+
 import {
 	ICashAdvancePayment,
 	ICashAdvancePaymentDto,
@@ -21,6 +23,7 @@ export default class SettlementService {
 	private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
 	private readonly _paymentDashboardApiService: PaymentDashboardApiService
 	private readonly _cashAdvancePaymentsRepository: CashAdvancePaymentsRepository
+	private readonly _cashAdvanceBalanceRepository: CashAdvanceBalanceRepository
 
 	constructor({
 		MerchantRepository,
@@ -29,6 +32,7 @@ export default class SettlementService {
 		AmortizationScheduleRepository,
 		PaymentDashboardApiService,
 		CashAdvancePaymentsRepository,
+		CashAdvanceBalanceRepository,
 	}) {
 		this._cashAdvanceApplicationRepository = CashAdvanceApplicationRepository
 		this._merchantRepository = MerchantRepository
@@ -36,6 +40,7 @@ export default class SettlementService {
 		this._amortizationScheduleRepository = AmortizationScheduleRepository
 		this._paymentDashboardApiService = PaymentDashboardApiService
 		this._cashAdvancePaymentsRepository = CashAdvancePaymentsRepository
+		this._cashAdvanceBalanceRepository = CashAdvanceBalanceRepository
 	}
 
 	public async settleCashAdvance(): Promise<any> {
@@ -64,27 +69,34 @@ export default class SettlementService {
 						merchant_id: result.merchant_id,
 					}
 					const lastPaymentCondition = {
-						cash_advance_application_id: result.cash_advance_application_id
+						cash_advance_application_id: result.cash_advance_application_id,
 					}
-					lastPayment = await this._cashAdvancePaymentsRepository.latestWithCondition(lastPaymentCondition, 'uuid')
+					lastPayment = await this._cashAdvancePaymentsRepository.latestWithCondition(
+						lastPaymentCondition,
+						'uuid',
+					)
 
 					merchantTerminals = await this._merchantTerminalRepository.findManyByOneCondition(
 						merchantCondition,
 					)
 
 					dailySales = 0
-					await Promise.all(map(merchantTerminals, async (terminal) => {
-						dailyInvoiceDashboard = await this._paymentDashboardApiService.retrieveTerminal(
-							terminal.terminal_api_id.toString(),
-							moment().subtract(1, 'days').format('YYYY-MM-DD'),
-							'settlement_date',
-						)
+					await Promise.all(
+						map(merchantTerminals, async (terminal) => {
+							dailyInvoiceDashboard = await this._paymentDashboardApiService.retrieveTerminal(
+								terminal.terminal_api_id.toString(),
+								moment().subtract(1, 'days').format('YYYY-MM-DD'),
+								'settlement_date',
+							)
 
-						console.log(dailyInvoiceDashboard.dateTotal.cash_disp)
-						dailySales += Number(
-							dailyInvoiceDashboard.dateTotal.cash_disp.substring(1).replace(/\,/g, ''),
-						)
-					}))
+							console.log(dailyInvoiceDashboard.dateTotal.cash_disp)
+							dailySales += Number(
+								dailyInvoiceDashboard.dateTotal.cash_disp
+									.substring(1)
+									.replace(/\,/g, ''),
+							)
+						}),
+					)
 
 					cashAdvance = await this._cashAdvanceApplicationRepository.findOneByUuid(
 						result.cash_advance_application_id,
@@ -98,8 +110,7 @@ export default class SettlementService {
 						cashAdvance.principal_amount * Number(factorRate)
 					const principalAmount = withHoldingAmount - factoringFees
 
-					remainingPrincipal =
-						cashAdvance.principal_amount - principalAmount
+					remainingPrincipal = cashAdvance.principal_amount - principalAmount
 					remainingTotalBalance = paybackAmount - withHoldingAmount
 
 					if (lastPayment) {
@@ -136,14 +147,45 @@ export default class SettlementService {
 					)
 
 					const updateCondition = {
-						uuid: result.uuid
+						uuid: result.uuid,
 					}
 					const updatePayload = {
 						actual_amount_paid: result.actual_amount_paid + withHoldingAmount,
-						status: result.total_daily_repayment > result.actual_amount_paid + withHoldingAmount ? 'partial' : 'completed'
+						status:
+							result.total_daily_repayment >
+							result.actual_amount_paid + withHoldingAmount
+								? 'partial'
+								: 'completed',
 					}
 
-					this._amortizationScheduleRepository.updateOneByCondition(updateCondition, updatePayload)
+					await this._amortizationScheduleRepository.updateOneByCondition(
+						updateCondition,
+						updatePayload,
+					)
+					const updateConditionCashAdvanceBalance = {
+						cash_advance_application_id: result.cash_advance_application_id,
+					}
+					const cashAdvanceBalance = await this._cashAdvanceBalanceRepository.findOneByCondition(
+						updateConditionCashAdvanceBalance,
+					)
+
+					const updatePayloadCashAdvanceBalance = {
+						total_revenue: cashAdvanceBalance.total_revenue + factoringFees,
+						bad_debt_expense: remainingPrincipal,
+						factoring_fees_collected:
+							cashAdvanceBalance.factoring_fees_collected + factoringFees,
+						principal_collected:
+							cashAdvanceBalance.principal_collected + principalAmount,
+						cash_advance_total_remaining_balance:
+							cashAdvanceBalance.cash_advance_total_remaining_balance -
+							withHoldingAmount,
+					}
+
+					await this._cashAdvanceBalanceRepository.updateOneByCondition(
+						updateConditionCashAdvanceBalance,
+						updatePayloadCashAdvanceBalance,
+					)
+
 					return cashAdvancePaymentsPayload
 				}),
 			)

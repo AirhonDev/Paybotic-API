@@ -89,7 +89,8 @@ export default abstract class {
 							.map((column) => `"${column}", ${alias || table}.${column}`)
 							.join(', ')
 						return this.manager.raw(
-							`${isMany ? 'JSON_ARRAYAGG' : ''
+							`${
+								isMany ? 'JSON_ARRAYAGG' : ''
 							}(JSON_OBJECT(${columnsDetails})) as ${nameAs}`,
 						)
 					},
@@ -195,8 +196,10 @@ export default abstract class {
 
 	public async latestWithCondition(condition, field): Promise<any> {
 		try {
-			return this.manager(this.table).where(condition)
-				.orderBy(field, 'desc').first()
+			return this.manager(this.table)
+				.where(condition)
+				.orderBy(field, 'desc')
+				.first()
 		} catch (SQLError) {
 			throw new Error(SQLError)
 		}

@@ -8,96 +8,95 @@ import CashAdvancePaymentsRepository from '@components/cash-advance-payments/Cas
 
 const TAG = '[CashAdvancePaymentsService]'
 
-
 export default class CashAdvancePaymentsService {
-    private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
-    private readonly _cashAdvancePaymentsRepository: CashAdvancePaymentsRepository
+	private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
+	private readonly _cashAdvancePaymentsRepository: CashAdvancePaymentsRepository
 
-    constructor({
-        AmortizationScheduleRepository,
-        CashAdvancePaymentsRepository
-    }) {
-        this._amortizationScheduleRepository = AmortizationScheduleRepository
-        this._cashAdvancePaymentsRepository = CashAdvancePaymentsRepository
-    }
+	constructor({
+		AmortizationScheduleRepository,
+		CashAdvancePaymentsRepository,
+	}) {
+		this._amortizationScheduleRepository = AmortizationScheduleRepository
+		this._cashAdvancePaymentsRepository = CashAdvancePaymentsRepository
+	}
 
-    public async retrieveListOfCashAdvancePayments(condition): Promise<any> {
-        const METHOD = '[retrieveListOfCashAdvancePayments]'
-        log.info(`${TAG} ${METHOD}`)
+	public async retrieveListOfCashAdvancePayments(condition): Promise<any> {
+		const METHOD = '[retrieveListOfCashAdvancePayments]'
+		log.info(`${TAG} ${METHOD}`)
 
-        const {
-            search,
-            whereField,
-            whereValue,
-            perPage,
-            page,
-            orderBy,
-            ...rest
-        } = condition
+		const {
+			search,
+			whereField,
+			whereValue,
+			perPage,
+			page,
+			orderBy,
+			...rest
+		} = condition
 
-        const postCols = [
-            `${CASH_ADVANCE_PAYMENTS_TABLE}.uuid`,
-            `${CASH_ADVANCE_PAYMENTS_TABLE}.created_at`,
-        ]
-        const actualCols = [
-            {
-                table: CASH_ADVANCE_PAYMENTS_TABLE,
-                col: 'created_at',
-                name: 'created_at',
-            },
-        ]
+		const postCols = [
+			`${CASH_ADVANCE_PAYMENTS_TABLE}.uuid`,
+			`${CASH_ADVANCE_PAYMENTS_TABLE}.created_at`,
+		]
+		const actualCols = [
+			{
+				table: CASH_ADVANCE_PAYMENTS_TABLE,
+				col: 'created_at',
+				name: 'created_at',
+			},
+		]
 
-        const offset = page === 1 ? 0 : (page - 1) * perPage
-        const limit = page === 1 ? perPage * page : perPage
-        const pagination = {
-            limit: Number(limit) || 0,
-            offset: Number(offset) || 0,
-        }
-        const orderQuery = getOrderByQuery(orderBy, actualCols)
+		const offset = page === 1 ? 0 : (page - 1) * perPage
+		const limit = page === 1 ? perPage * page : perPage
+		const pagination = {
+			limit: Number(limit) || 0,
+			offset: Number(offset) || 0,
+		}
+		const orderQuery = getOrderByQuery(orderBy, actualCols)
 
-        if (orderQuery) {
-            const hasInvalidCols = some(
-                orderQuery,
-                ({ column }) => !postCols.includes(column),
-            )
-            if (hasInvalidCols) {
-                throw new Error('Invalid column name in "orderBy"')
-            }
-        }
+		if (orderQuery) {
+			const hasInvalidCols = some(
+				orderQuery,
+				({ column }) => !postCols.includes(column),
+			)
+			if (hasInvalidCols) {
+				throw new Error('Invalid column name in "orderBy"')
+			}
+		}
 
-        // const populate = [
-        // 	{
-        // 		table: '<ANOTHER TABLE>',
-        // 		firstTableProp: 'uuid',
-        // 		secondTableProp: 'uuid',
-        // 		nameAs: 'namedProperty',
-        // 	},
-        // ]
+		// const populate = [
+		// 	{
+		// 		table: '<ANOTHER TABLE>',
+		// 		firstTableProp: 'uuid',
+		// 		secondTableProp: 'uuid',
+		// 		nameAs: 'namedProperty',
+		// 	},
+		// ]
 
-        let queryResult
+		let queryResult
 
-        try {
-            const decoded = transform(
-                rest,
-                (result, value, key) => {
-                    return (result[key] = decodeURI(decodeURIComponent(value)))
-                },
-                {},
-            )
-            const condQuery = { ...decoded }
-            if (whereField && whereValue) condQuery[whereField] = whereValue
+		try {
+			const decoded = transform(
+				rest,
+				(result, value, key) => {
+					return (result[key] = decodeURI(decodeURIComponent(value)))
+				},
+				{},
+			)
+			const condQuery = { ...decoded }
+			if (whereField && whereValue) condQuery[whereField] = whereValue
 
-            queryResult = await this._cashAdvancePaymentsRepository.findManyByCondition(
-                condQuery,
-                pagination,
-                orderQuery,
-                // populate,
-            )
-        } catch (DBError) {
-            log.error(`${TAG} ${DBError}`)
-            throw new Error(DBError)
-        }
+			queryResult = await this._cashAdvancePaymentsRepository.findManyByCondition(
+				condQuery,
+				pagination,
+				orderQuery,
+				// populate,
+			)
+		} catch (DBError) {
+			log.error(`${TAG} ${DBError}`)
+			throw new Error(DBError)
+		}
 
-        return queryResult
-    }
+		return queryResult
+	}
 }

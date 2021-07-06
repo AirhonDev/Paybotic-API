@@ -10,6 +10,7 @@ import BusinessInformationRepository from '@components/business-informations/Bus
 import MerchantTerminalRepository from '@components/merchant-terminals/MerchantTerminalRepository'
 import AmortizationScheduleRepository from '@components/amortization-schedules/AmortizationScheduleRepository'
 import CashAdvancePaymentsRepository from '@components/cash-advance-payments/CashAdvancePaymentsRepository'
+import CashAdvanceBalanceRepository from '@components/cash-advance-balances/CashAdvanceBalanceRepository'
 
 const REPOSITORIES = [
 	PostRepository,
@@ -21,6 +22,7 @@ const REPOSITORIES = [
 	AmortizationScheduleRepository,
 	MerchantEntityRepository,
 	CashAdvancePaymentsRepository,
+	CashAdvanceBalanceRepository,
 ]
 
 export default (container: AwilixContainer): void => {

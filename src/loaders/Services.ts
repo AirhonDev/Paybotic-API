@@ -19,7 +19,7 @@ const SERVICES = [
 	SettlementService,
 	AmortizationScheduleService,
 	SilaMoneyApiService,
-	CashAdvancePaymentsService
+	CashAdvancePaymentsService,
 ]
 
 export default (container: AwilixContainer): void => {

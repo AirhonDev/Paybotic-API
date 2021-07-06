@@ -7,11 +7,17 @@ import * as moment from 'moment'
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import CashAdvanceApplicationRepository from '@components/cash-advance-application/CashAdvanceApplicationRepository'
 import AmortizationScheduleRepository from '@components/amortization-schedules/AmortizationScheduleRepository'
+import CashAdvanceBalanceRepository from '@components/cash-advance-balances/CashAdvanceBalanceRepository'
 
 import {
 	ICashAdvanceApplication,
 	ICashAdvanceApplicationDto,
 } from '@models/cash-advance-application/index'
+import {
+	ICashAdvanceBalance,
+	ICashAdvanceBalanceDto,
+} from '@models/cash-advance-balances/index'
+
 import {
 	IAmortizationSchedule,
 	IAmortizationSchedulesDto,
@@ -22,13 +28,16 @@ const TAG = '[CashAdvanceApplicationService]'
 export default class CashAdvanceApplicationService {
 	private readonly _cashAdvanceApplicationRepository: CashAdvanceApplicationRepository
 	private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
+	private readonly _cashAdvanceBalanceRepository: CashAdvanceBalanceRepository
 
 	constructor({
 		CashAdvanceApplicationRepository,
 		AmortizationScheduleRepository,
+		CashAdvanceBalanceRepository,
 	}) {
 		this._cashAdvanceApplicationRepository = CashAdvanceApplicationRepository
 		this._amortizationScheduleRepository = AmortizationScheduleRepository
+		this._cashAdvanceBalanceRepository = CashAdvanceBalanceRepository
 	}
 
 	public async createCashAdvanceApplication(
@@ -44,7 +53,9 @@ export default class CashAdvanceApplicationService {
 		}
 
 		try {
-			await this._cashAdvanceApplicationRepository.insert(mcaPayload)
+			const cashAdvanceId = await this._cashAdvanceApplicationRepository.insert(
+				mcaPayload,
+			)
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
@@ -223,6 +234,34 @@ export default class CashAdvanceApplicationService {
 						await this.saveAmortizationSchedule(amortizationSchedule)
 					}),
 				)
+
+				const cashdvanceBalancePayload: ICashAdvanceBalance = {
+					cashAdvanceApplicationId: cashAdvanceApplicationResult.uuid,
+					merchantId: cashAdvanceApplicationResult.merchant_id,
+					totalRevenue: 0,
+					badDebtExpense: 0,
+					factoringFeesCollected: 0,
+					principalCollected: 0,
+					cashAdvanceTotalRemainingBalance: paybackAmount,
+					createdAt: new Date(Date.now()),
+					updatedAt: new Date(Date.now()),
+					dateArchived: null,
+					archived: false,
+				}
+				const updateConditionCashAdvanceBalance = {
+					cash_advance_application_id: cashAdvanceApplicationResult.uuid,
+				}
+
+				const cashAdvanceBalance = await this._cashAdvanceBalanceRepository.findOneByCondition(
+					updateConditionCashAdvanceBalance,
+				)
+
+				if (!cashAdvanceBalance) {
+					await this._cashAdvanceBalanceRepository.insert(
+						cashdvanceBalancePayload,
+					)
+				}
+
 			}
 		} catch (DBError) {
 			throw new Error(DBError)
