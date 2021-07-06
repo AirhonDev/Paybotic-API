@@ -149,19 +149,33 @@ export default class SettlementService {
 					const updateCondition = {
 						uuid: result.uuid,
 					}
-					const updatePayload = {
-						actual_amount_paid: result.actual_amount_paid + withHoldingAmount,
-						status:
-							result.total_daily_repayment >
-							result.actual_amount_paid + withHoldingAmount
-								? 'partial'
-								: 'completed',
+					if (withHoldingAmount > 1) {
+						const updatePayload = {
+							actual_amount_paid: result.actual_amount_paid + withHoldingAmount,
+							status:
+								result.total_daily_repayment >
+									result.actual_amount_paid + withHoldingAmount
+									? 'partial'
+									: 'completed',
+						}
+
+						await this._amortizationScheduleRepository.updateOneByCondition(
+							updateCondition,
+							updatePayload,
+						)
+					} else {
+						const updatePayload = {
+							actual_amount_paid: result.actual_amount_paid + withHoldingAmount,
+							status: 'missed'
+						}
+
+						await this._amortizationScheduleRepository.updateOneByCondition(
+							updateCondition,
+							updatePayload,
+						)
 					}
 
-					await this._amortizationScheduleRepository.updateOneByCondition(
-						updateCondition,
-						updatePayload,
-					)
+				
 					const updateConditionCashAdvanceBalance = {
 						cash_advance_application_id: result.cash_advance_application_id,
 					}
