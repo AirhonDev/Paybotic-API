@@ -21,7 +21,7 @@ put:
   - Merchant
   description: Update Merchant By Id
   parameters:
-      - in: query
+      - in: path
         name: merchantId
         required: true
         schema:

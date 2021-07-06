@@ -154,7 +154,7 @@ export default class SettlementService {
 							actual_amount_paid: result.actual_amount_paid + withHoldingAmount,
 							status:
 								result.total_daily_repayment >
-									result.actual_amount_paid + withHoldingAmount
+								result.actual_amount_paid + withHoldingAmount
 									? 'partial'
 									: 'completed',
 						}
@@ -166,7 +166,7 @@ export default class SettlementService {
 					} else {
 						const updatePayload = {
 							actual_amount_paid: result.actual_amount_paid + withHoldingAmount,
-							status: 'missed'
+							status: 'missed',
 						}
 
 						await this._amortizationScheduleRepository.updateOneByCondition(
@@ -175,7 +175,6 @@ export default class SettlementService {
 						)
 					}
 
-				
 					const updateConditionCashAdvanceBalance = {
 						cash_advance_application_id: result.cash_advance_application_id,
 					}

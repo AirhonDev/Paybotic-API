@@ -7,6 +7,7 @@ import CashAdvanceApplicationRouter from '@components/cash-advance-application/C
 import AmortizationScheduleRouter from '@components/amortization-schedules/AmortizationScheduleRouter'
 import CashAdvancePaymentsRouter from '@components/cash-advance-payments/CashAdvancePaymentsRouter'
 import CashAdvanceBalanceRouter from '@components/cash-advance-balances/CashAdvanceBalanceRouter'
+import BusinessInformationRouter from '@components/business-informations/BusinessInformationRouter'
 
 function v1Routes(app: Application): void {
 	app.use('/api/v1/posts', PostRouter)
@@ -16,6 +17,7 @@ function v1Routes(app: Application): void {
 	app.use('/api/v1/amortization-schedules', AmortizationScheduleRouter)
 	app.use('/api/v1/cash-advance-payments', CashAdvancePaymentsRouter)
 	app.use('/api/v1/cash-advance-balances', CashAdvanceBalanceRouter)
+	app.use('/api/v1/business-informations', BusinessInformationRouter)
 }
 
 export default function routes(app: Application): void {

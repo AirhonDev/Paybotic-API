@@ -89,7 +89,8 @@ export default abstract class {
 							.map((column) => `"${column}", ${alias || table}.${column}`)
 							.join(', ')
 						return this.manager.raw(
-							`${isMany ? 'JSON_ARRAYAGG' : ''
+							`${
+								isMany ? 'JSON_ARRAYAGG' : ''
 							}(JSON_OBJECT(${columnsDetails})) as ${nameAs}`,
 						)
 					},
@@ -206,9 +207,7 @@ export default abstract class {
 
 	public async getByOrder(condition, field, order) {
 		try {
-			return this.manager(this.table)
-				.where(condition)
-				.orderBy(field, order)
+			return this.manager(this.table).where(condition).orderBy(field, order)
 		} catch (SQLError) {
 			throw new Error(SQLError)
 		}
