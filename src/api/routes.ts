@@ -6,6 +6,7 @@ import SettlementRouter from '@components/settlements/SettlementRouter'
 import CashAdvanceApplicationRouter from '@components/cash-advance-application/CashAdvanceApplicationRouter'
 import AmortizationScheduleRouter from '@components/amortization-schedules/AmortizationScheduleRouter'
 import CashAdvancePaymentsRouter from '@components/cash-advance-payments/CashAdvancePaymentsRouter'
+import CashAdvanceBalanceRouter from '@components/cash-advance-balances/CashAdvanceBalanceRouter'
 
 function v1Routes(app: Application): void {
 	app.use('/api/v1/posts', PostRouter)
@@ -14,6 +15,7 @@ function v1Routes(app: Application): void {
 	app.use('/api/v1/settlements', SettlementRouter)
 	app.use('/api/v1/amortization-schedules', AmortizationScheduleRouter)
 	app.use('/api/v1/cash-advance-payments', CashAdvancePaymentsRouter)
+	app.use('/api/v1/cash-advance-balances', CashAdvanceBalanceRouter)
 }
 
 export default function routes(app: Application): void {

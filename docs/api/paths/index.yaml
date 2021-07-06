@@ -21,3 +21,6 @@
 
 /cash-advance-payments:
   $ref: ./cash-advance-payment/cash-advance-payment.yaml
+
+/cash-advance-balances/{cashAdvanceApplicationId}:
+  $ref: ./cash-advance-balance/cash-advance-balance.id.yaml
