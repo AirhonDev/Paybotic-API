@@ -12,7 +12,7 @@ exports.up = function(knex) {
     t.decimal('factor_rate', 4, 2).notNullable()
     t.decimal('origination_fee', 8, 2).notNullable()
     t.enu('repayment_type', ['daily_fixed_amount', 'daily_witholding']).index()
-    t.enu('status', ['approved', 'pending', 'cancelled', 'rejected', 'completed']).index()
+    t.enu('status', ['approved', 'pending', 'cancelled', 'rejected', 'completed', 'default']).index()
     t.timestamps(['created_at', 'updated_at'], [knex.fn.now(), knex.fn.now()])
 		t.dateTime('date_archived')
 		t.boolean('archived').defaultTo(false)

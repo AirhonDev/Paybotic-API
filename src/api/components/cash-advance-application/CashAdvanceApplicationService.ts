@@ -178,8 +178,8 @@ export default class CashAdvanceApplicationService {
 			cashAdvanceApplicationResult = await this._cashAdvanceApplicationRepository.findOneByUuid(
 				params.cashAdvanceApplicationId,
 			)
-			// if (cashAdvanceApplicationResult.status == 'approved')
-			// 	throw new Error('Cash advance application is already approved')
+			if (body.status == cashAdvanceApplicationResult.status)
+				throw new Error('Cash advance application is already' + body.status)
 
 			await this._cashAdvanceApplicationRepository.updateOneByCondition(
 				condition,
@@ -190,84 +190,91 @@ export default class CashAdvanceApplicationService {
 				params.cashAdvanceApplicationId,
 			)
 
-			if (cashAdvanceApplicationResult.status == 'approved') {
-				const startDate = moment(cashAdvanceApplicationResult.start_date)
-				const endDate = moment(cashAdvanceApplicationResult.end_date)
+			const exisiting = await this._amortizationScheduleRepository.findOneByCondition({
+				cash_advance_application_id: params.cashAdvanceApplicationId
+			})
 
-				const inBetweenDays = await this.getDaysBetweenDates(startDate, endDate)
+			if (!exisiting) {
+				if (cashAdvanceApplicationResult.status == 'approved') {
+					const startDate = moment(cashAdvanceApplicationResult.start_date)
+					const endDate = moment(cashAdvanceApplicationResult.end_date)
 
-				const numberOfDays = inBetweenDays.length
+					const inBetweenDays = await this.getDaysBetweenDates(startDate, endDate)
 
-				console.log(numberOfDays)
-				const factorRate = cashAdvanceApplicationResult.factor_rate
-					.toString()
-					.substring(1, 4)
+					const numberOfDays = inBetweenDays.length
 
-				const paybackAmount =
-					cashAdvanceApplicationResult.principal_amount +
-					cashAdvanceApplicationResult.principal_amount * Number(factorRate)
+					console.log(numberOfDays)
+					const factorRate = cashAdvanceApplicationResult.factor_rate
+						.toString()
+						.substring(1, 4)
 
-				const principalAmount =
-					cashAdvanceApplicationResult.principal_amount / Number(numberOfDays)
+					const paybackAmount =
+						cashAdvanceApplicationResult.principal_amount +
+						cashAdvanceApplicationResult.principal_amount * Number(factorRate)
 
-				const factoringFees = principalAmount * Number(factorRate)
+					const principalAmount =
+						cashAdvanceApplicationResult.principal_amount / Number(numberOfDays)
 
-				const dailyAmount = principalAmount + factoringFees
+					const factoringFees = principalAmount * Number(factorRate)
 
-				await Promise.all(
-					map(inBetweenDays, async (date) => {
-						const amortizationSchedule: IAmortizationSchedule = {
-							archived: false,
-							merchantId: cashAdvanceApplicationResult.merchant_id,
-							createdAt: new Date(Date.now()),
-							dateArchived: null,
-							updatedAt: null,
-							uuid: 0,
-							actualAmountPaid: 0,
-							principalAmount: principalAmount,
-							factoringFees: factoringFees,
-							totalDailyRepayment: dailyAmount,
-							status: 'pending',
-							settlement_date: new Date(date),
-							cashAdvanceApplicationId: cashAdvanceApplicationResult.uuid,
-						}
+					const dailyAmount = principalAmount + factoringFees
 
-						await this.saveAmortizationSchedule(amortizationSchedule)
-					}),
-				)
+					await Promise.all(
+						map(inBetweenDays, async (date) => {
+							const amortizationSchedule: IAmortizationSchedule = {
+								archived: false,
+								merchantId: cashAdvanceApplicationResult.merchant_id,
+								createdAt: new Date(Date.now()),
+								dateArchived: null,
+								updatedAt: null,
+								uuid: 0,
+								actualAmountPaid: 0,
+								principalAmount: principalAmount,
+								factoringFees: factoringFees,
+								totalDailyRepayment: dailyAmount,
+								status: 'pending',
+								settlement_date: new Date(date),
+								cashAdvanceApplicationId: cashAdvanceApplicationResult.uuid,
+							}
 
-				const cashdvanceBalancePayload: ICashAdvanceBalance = {
-					cashAdvanceApplicationId: cashAdvanceApplicationResult.uuid,
-					merchantId: cashAdvanceApplicationResult.merchant_id,
-					totalRevenue: 0,
-					badDebtExpense: 0,
-					factoringFeesCollected: 0,
-					principalCollected: 0,
-					cashAdvanceTotalRemainingBalance: paybackAmount,
-					createdAt: new Date(Date.now()),
-					updatedAt: new Date(Date.now()),
-					dateArchived: null,
-					archived: false,
-				}
-				const updateConditionCashAdvanceBalance = {
-					cash_advance_application_id: cashAdvanceApplicationResult.uuid,
-				}
+							await this.saveAmortizationSchedule(amortizationSchedule)
+						}),
+					)
 
-				const cashAdvanceBalance = await this._cashAdvanceBalanceRepository.findOneByCondition(
-					updateConditionCashAdvanceBalance,
-				)
+					const cashdvanceBalancePayload: ICashAdvanceBalance = {
+						cashAdvanceApplicationId: cashAdvanceApplicationResult.uuid,
+						merchantId: cashAdvanceApplicationResult.merchant_id,
+						totalRevenue: 0,
+						badDebtExpense: 0,
+						factoringFeesCollected: 0,
+						principalCollected: 0,
+						cashAdvanceTotalRemainingBalance: paybackAmount,
+						createdAt: new Date(Date.now()),
+						updatedAt: new Date(Date.now()),
+						dateArchived: null,
+						archived: false,
+					}
+					const updateConditionCashAdvanceBalance = {
+						cash_advance_application_id: cashAdvanceApplicationResult.uuid,
+					}
 
-				if (!cashAdvanceBalance) {
-					await this._cashAdvanceBalanceRepository.insert(
-						cashdvanceBalancePayload,
+					const cashAdvanceBalance = await this._cashAdvanceBalanceRepository.findOneByCondition(
+						updateConditionCashAdvanceBalance,
+					)
+
+					if (!cashAdvanceBalance) {
+						await this._cashAdvanceBalanceRepository.insert(
+							cashdvanceBalancePayload,
+						)
+					}
+
+					await this.computeAmortizationFee(
+						cashAdvanceApplicationResult,
+						paybackAmount,
 					)
 				}
-
-				await this.computeAmortizationFee(
-					cashAdvanceApplicationResult,
-					paybackAmount,
-				)
 			}
+
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
