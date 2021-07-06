@@ -18,3 +18,6 @@
 
 /amortization-schedules:
   $ref: ./amortization-schedule/amortization-schedule.yaml
+
+/cash-advance-payments:
+  $ref: ./cash-advance-payment/cash-advance-payment.yaml

@@ -3,6 +3,7 @@ const { PAYMENT_DASHBOARD_API_HOST, PAYMENT_DASHBOARD_API_TOKEN } = process.env
 
 import log from '@logger'
 import { some, transform, mapValues, take, map, remove } from 'lodash'
+import * as moment from 'moment'
 
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import MerchantRepository from '@components/merchants/MerchantRepository'
@@ -92,7 +93,7 @@ export default class MerchantService {
 		)
 
 		const newIndividualUser = {
-			handle: 'user.merchant.paybotic00' + merchantInformationData.uuid,
+			handle: 'user.merchant.paybotic' + moment().unix() + merchantInformationData.uuid,
 			firstName: businessInformationPayload.owner1FirstName,
 			lastName: businessInformationPayload.owner1LastName,
 			address: physicalAddressPayload.streetAddress,

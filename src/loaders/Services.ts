@@ -9,6 +9,7 @@ import CashAdvanceApplicationService from '@components/cash-advance-application/
 import PaymentDashboardApiService from '@components/merchants/PaymentDashboardApiService'
 import SettlementService from '@components/settlements/SettlementService'
 import AmortizationScheduleService from '@components/amortization-schedules/AmortizationScheduleService'
+import CashAdvancePaymentsService from '@components/cash-advance-payments/CashAdvancePaymentsService'
 
 const SERVICES = [
 	PostService,
@@ -18,6 +19,7 @@ const SERVICES = [
 	SettlementService,
 	AmortizationScheduleService,
 	SilaMoneyApiService,
+	CashAdvancePaymentsService
 ]
 
 export default (container: AwilixContainer): void => {
