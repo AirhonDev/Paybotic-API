@@ -66,6 +66,7 @@
     "express": "^4.17.1",
     "express-openapi-validator": "^3.16.6",
     "file-url": "^4.0.0",
+    "get-base-url": "^2.2.0",
     "helmet": "^4.4.1",
     "js-yaml": "^3.14.0",
     "json-refs": "^3.0.15",

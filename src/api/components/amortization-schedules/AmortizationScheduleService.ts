@@ -8,6 +8,8 @@ import * as moment from 'moment'
 import { some, transform, map } from 'lodash'
 import { resolve } from 'path'
 import { pathToFileURL } from 'url'
+import getBaseUrl from "get-base-url"
+
 
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import CashAdvancePaymentsRepository from '@components/cash-advance-payments/CashAdvancePaymentsRepository'
@@ -141,7 +143,7 @@ export default class AmortizationScheduleService {
 		return cashAdvanceApplicationResult
 	}
 
-	public async exportAmortizationSchedule(condition): Promise<any> {
+	public async exportAmortizationSchedule(condition, req): Promise<any> {
 		let amortizationScheduleResult
 		try {
 			amortizationScheduleResult = await this.retrieveListOfAmortizationSchedules(
@@ -162,8 +164,9 @@ export default class AmortizationScheduleService {
 				'Remaining Total Balance',
 			]
 			const workSheetName = 'Amortization Schedule'
+			const fileName = 'amortization-schedule' + moment().unix() + '.xlsx'
 			const filePath =
-				'./src/api/components/amortization-schedules/amortization-exports/amortization-schedule.xlsx'
+				'./public/amortization-exports/' + fileName
 
 			this._exportToExcelService.exportAmortizationSchedule(
 				amortizationScheduleResult.data,
@@ -172,7 +175,8 @@ export default class AmortizationScheduleService {
 				filePath,
 			)
 
-			return pathToFileURL(filePath)
+			const baseUrl = req.protocol + '://' + req.get('host')
+			return baseUrl + '/amortization-exports/' + fileName
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
