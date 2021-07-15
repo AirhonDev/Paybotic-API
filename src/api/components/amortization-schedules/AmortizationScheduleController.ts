@@ -28,6 +28,26 @@ export class Controller {
 
 		return next()
 	}
+
+	public async exportAmortizationSchedule(
+		req: any,
+		res: Response,
+		next: NextFunction,
+	): Promise<Response | void> {
+		const METHOD = '[exportAmortizationSchedule]'
+		log.info(`${TAG} ${METHOD}`)
+		let result
+		const { AmortizationScheduleService } = req.container.cradle
+		try {
+			result = await AmortizationScheduleService.exportAmortizationSchedule(
+				req.query,
+			)
+		} catch (error) {
+			return next(error)
+		}
+
+		return res.send(new CreateSucess(`Successfully created new export`, result))
+	}
 }
 
 export default new Controller()

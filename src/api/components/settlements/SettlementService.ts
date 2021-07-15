@@ -127,6 +127,11 @@ export default class SettlementService {
 					console.log(remainingPrincipal)
 					console.log(remainingTotalBalance)
 
+					const status = result.total_daily_repayment >
+						result.actual_amount_paid + withHoldingAmount
+						? 'partial'
+						: 'completed'
+
 					const cashAdvancePaymentsPayload: ICashAdvancePayment = {
 						cashAdvanceApplicationId: result.cash_advance_application_id,
 						amortizationScheduleId: result.uuid,
@@ -137,6 +142,7 @@ export default class SettlementService {
 						factoringFees,
 						remainingPrincipal,
 						remainingTotalBalance,
+						status: status,
 						archived: false,
 						createdAt: new Date(Date.now()),
 						dateArchived: null,
@@ -152,11 +158,7 @@ export default class SettlementService {
 					if (withHoldingAmount > 1) {
 						const updatePayload = {
 							actual_amount_paid: result.actual_amount_paid + withHoldingAmount,
-							status:
-								result.total_daily_repayment >
-								result.actual_amount_paid + withHoldingAmount
-									? 'partial'
-									: 'completed',
+							status: status
 						}
 
 						await this._amortizationScheduleRepository.updateOneByCondition(

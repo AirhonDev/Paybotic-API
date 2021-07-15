@@ -29,7 +29,7 @@ export default class SilaMoneyApiService {
 		try {
 			result = await axios(request)
 		} catch (APIError) {
-			throw new Error(APIError)
+			throw new Error(APIError) 
 		}
 		const payload = {
 			...merchantEntityPayload,

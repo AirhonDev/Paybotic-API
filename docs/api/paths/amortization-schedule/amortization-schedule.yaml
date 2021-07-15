@@ -14,3 +14,20 @@ get:
     200:
       description: Returns all examples
       content: {}
+
+post:
+  tags:
+  - Amortization Schedule Export
+  description: Export Amortization Schedule Using Excel
+  parameters:
+    - $ref: '#/components/parameters/WhereField'
+    - $ref: '#/components/parameters/WhereValue'
+    - $ref: '#/components/parameters/OrderBy'
+    - $ref: '#/components/parameters/PerPage'
+    - $ref: '#/components/parameters/CreatedStartDate'
+    - $ref: '#/components/parameters/CreatedEndDate'
+    - $ref: '#/components/parameters/Page'
+  responses:
+    200:
+      description: Returns all examples
+      content: {}

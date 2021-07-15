@@ -205,6 +205,16 @@ export default abstract class {
 		}
 	}
 
+	public async latestWithConditionMany(condition, field, sort): Promise<any> {
+		try {
+			return this.manager(this.table)
+				.where(condition)
+				.orderBy(field, sort)
+		} catch (SQLError) {
+			throw new Error(SQLError)
+		}
+	}
+
 	public async getByOrder(condition, field, order) {
 		try {
 			return this.manager(this.table).where(condition).orderBy(field, order)

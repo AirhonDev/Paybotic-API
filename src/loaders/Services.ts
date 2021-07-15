@@ -3,6 +3,7 @@ import l from '@logger'
 
 import PostService from '@components/posts/PostService'
 import SilaMoneyApiService from '@services/SilaMoneyApiService'
+import ExportToExcelService from '@services/ExportToExcelService'
 import MerchantService from '@components/merchants/MerchantService'
 import CashAdvanceApplicationService from '@components/cash-advance-application/CashAdvanceApplicationService'
 import BusinessInformationService from '@components/business-informations/BusinessInformationService'
@@ -25,6 +26,7 @@ const SERVICES = [
 	CashAdvanceBalanceService,
 	BusinessInformationService,
 	AddressService,
+	ExportToExcelService,
 ]
 
 export default (container: AwilixContainer): void => {

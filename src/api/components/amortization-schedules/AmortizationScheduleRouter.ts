@@ -5,3 +5,4 @@ import Metadata from '@middlewares/metadata.list'
 export default express
 	.Router()
 	.get('/', Controller.retrieveListOfAmortizationSchedules, Metadata)
+	.post('/', Controller.exportAmortizationSchedule, Metadata)
