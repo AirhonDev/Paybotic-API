@@ -29,6 +29,7 @@ export default class ExpressServer {
 		)
 		app.use(bodyParser.text({ limit: process.env.REQUEST_LIMIT || '100kb' }))
 		app.use(express.static(`${root}/public`))
+		app.use(express.static(`${root}/public/amortization-exports`))
 
 		/** CORS */
 		app.use(
