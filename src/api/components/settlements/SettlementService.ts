@@ -1,3 +1,10 @@
+const { 
+	PAYBOTIC_WALLET_ADDRESS,
+	PAYBOTIC_USER_HANDLE,
+	PAYBOTIC_WALLET_NICKNAME
+ } = process.env
+
+
 import MerchantRepository from '@components/merchants/MerchantRepository'
 import PaymentDashboardApiService from '@components/merchants/PaymentDashboardApiService'
 import CashAdvanceApplicationRepository from '@components/cash-advance-application/CashAdvanceApplicationRepository'
@@ -5,6 +12,8 @@ import MerchantTerminalRepository from '@components/merchant-terminals/MerchantT
 import AmortizationScheduleRepository from '@components/amortization-schedules/AmortizationScheduleRepository'
 import CashAdvancePaymentsRepository from '@components/cash-advance-payments/CashAdvancePaymentsRepository'
 import CashAdvanceBalanceRepository from '@components/cash-advance-balances/CashAdvanceBalanceRepository'
+import SilaMoneyApiService from '@services/SilaMoneyApiService'
+import MerchantEntityRepository from '@components/merchant-entities/MerchantEntityRepository'
 
 import {
 	ICashAdvancePayment,
@@ -24,6 +33,8 @@ export default class SettlementService {
 	private readonly _paymentDashboardApiService: PaymentDashboardApiService
 	private readonly _cashAdvancePaymentsRepository: CashAdvancePaymentsRepository
 	private readonly _cashAdvanceBalanceRepository: CashAdvanceBalanceRepository
+	private readonly _silaMoneyService: SilaMoneyApiService
+	private readonly _merchantEntityRepository: MerchantEntityRepository
 
 	constructor({
 		MerchantRepository,
@@ -33,6 +44,8 @@ export default class SettlementService {
 		PaymentDashboardApiService,
 		CashAdvancePaymentsRepository,
 		CashAdvanceBalanceRepository,
+		SilaMoneyApiService,
+		MerchantEntityRepository,
 	}) {
 		this._cashAdvanceApplicationRepository = CashAdvanceApplicationRepository
 		this._merchantRepository = MerchantRepository
@@ -41,6 +54,9 @@ export default class SettlementService {
 		this._paymentDashboardApiService = PaymentDashboardApiService
 		this._cashAdvancePaymentsRepository = CashAdvancePaymentsRepository
 		this._cashAdvanceBalanceRepository = CashAdvanceBalanceRepository
+		this._silaMoneyService = SilaMoneyApiService
+		this._merchantEntityRepository = MerchantEntityRepository
+
 	}
 
 	public async settleCashAdvance(): Promise<any> {
@@ -200,6 +216,30 @@ export default class SettlementService {
 						updateConditionCashAdvanceBalance,
 						updatePayloadCashAdvanceBalance,
 					)
+
+					const merchant = await this._merchantRepository.findOneByUuid(result.merchant_id)
+					const merchantEntity = await this._merchantEntityRepository.findOneByUuid(result.merchant_id)
+
+					const issueTokenPayload = {
+						amount: withHoldingAmount * 100,
+						accountName: merchant.name,
+						descriptor: 'Issue Token For Transfer',
+						processingType: 'STANDARD_ACH',
+						handle: merchantEntity.merchant_handle
+					}
+					console.log(issueTokenPayload)
+
+					await this._silaMoneyService.issueSilatoken(issueTokenPayload)
+
+					const transferToBankPayload = {
+						amount: withHoldingAmount * 100,
+						destinationHandle: PAYBOTIC_USER_HANDLE,
+						walletNickname: PAYBOTIC_WALLET_NICKNAME,
+						walletAddress: PAYBOTIC_WALLET_ADDRESS,
+						descriptor: 'Transfer To Bank Transaction',
+						handle: merchantEntity.merchant_handle
+					}
+					await this._silaMoneyService.transferToBank(transferToBankPayload)
 
 					return cashAdvancePaymentsPayload
 				}),

@@ -41,7 +41,7 @@ export class Controller {
 		try {
 			result = await AmortizationScheduleService.exportAmortizationSchedule(
 				req.query,
-				req
+				req,
 			)
 		} catch (error) {
 			return next(error)

@@ -8,8 +8,7 @@ import * as moment from 'moment'
 import { some, transform, map } from 'lodash'
 import { resolve } from 'path'
 import { pathToFileURL } from 'url'
-import getBaseUrl from "get-base-url"
-
+import getBaseUrl from 'get-base-url'
 
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import CashAdvancePaymentsRepository from '@components/cash-advance-payments/CashAdvancePaymentsRepository'
@@ -165,8 +164,7 @@ export default class AmortizationScheduleService {
 			]
 			const workSheetName = 'Amortization Schedule'
 			const fileName = 'amortization-schedule' + moment().unix() + '.xlsx'
-			const filePath =
-				'./public/amortization-exports/' + fileName
+			const filePath = './public/amortization-exports/' + fileName
 
 			this._exportToExcelService.exportAmortizationSchedule(
 				amortizationScheduleResult.data,

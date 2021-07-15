@@ -94,7 +94,7 @@ export default class MerchantService {
 
 		const newIndividualUser = {
 			handle:
-				'user.merchant.paybotic' +
+				'user.ali.merchant' +
 				moment().unix() +
 				merchantInformationData.uuid,
 			firstName: businessInformationPayload.owner1FirstName,
