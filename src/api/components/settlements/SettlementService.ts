@@ -68,7 +68,7 @@ export default class SettlementService {
 		let cashAdancePaymentResult
 		try {
 			const condition = {
-				settlement_date: moment().format('YYYY-MM-DD'),
+				settlement_date: moment().add(2, 'days').format('YYYY-MM-DD'),
 			}
 
 			results = await this._amortizationScheduleRepository.findManyByOneCondition(
@@ -101,10 +101,12 @@ export default class SettlementService {
 						const paymentsResult = await this.withHoldingPayment(cashAdvance, lastPayment, result, dailySales)
 						const merchantEntity = await this.issueToken(paymentsResult.withHoldingAmount, result)
 						await this.transferToBank(paymentsResult.withHoldingAmount, merchantEntity)
+					}
 
-						cashAdancePaymentResult = paymentsResult.cashAdancePaymentResult
-
-						return cashAdancePaymentResult
+					if (cashAdvance.repayment_type == 'daily_fixed_amount') {
+						const paymentsResult = await this.fixedDailyRepayment(cashAdvance, lastPayment, result, dailySales)
+						const merchantEntity = await this.issueToken(paymentsResult.withHoldingAmount, result)
+						await this.transferToBank(paymentsResult.withHoldingAmount, merchantEntity)
 					}
 
 				}),
@@ -355,6 +357,79 @@ export default class SettlementService {
 			}
 			await this._silaMoneyService.transferToBank(transferToBankPayload)
 
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
+	}
+
+	public async fixedDailyRepayment(
+		cashAdvance: any,
+		lastPayment: any,
+		result: any,
+		dailySales: any
+	): Promise<any> {
+		let withHoldingAmount
+		let remainingPrincipal
+		let remainingTotalBalance
+		try {
+			const factorRate = cashAdvance.factor_rate.toString().substring(1, 4)
+
+			withHoldingAmount = dailySales
+			if (dailySales > result.total_daily_repayment) {
+
+				const remainder = dailySales - result.total_daily_repayment
+				withHoldingAmount = dailySales - remainder
+			}
+			const factoringFees = withHoldingAmount * Number(factorRate)
+			const paybackAmount =
+				cashAdvance.principal_amount +
+				cashAdvance.principal_amount * Number(factorRate)
+			const principalAmount = withHoldingAmount - factoringFees
+			remainingPrincipal = cashAdvance.principal_amount - principalAmount
+			remainingTotalBalance = paybackAmount - withHoldingAmount
+
+			if (lastPayment) {
+				remainingPrincipal =
+					lastPayment.remaining_principal - principalAmount
+
+				remainingTotalBalance =
+					lastPayment.remaining_total_balance - withHoldingAmount
+			}
+
+			console.log(dailySales)
+			console.log(withHoldingAmount)
+			console.log(factoringFees)
+			console.log(principalAmount)
+			console.log(remainingPrincipal)
+			console.log(remainingTotalBalance)
+
+			const status = result.total_daily_repayment >
+				result.actual_amount_paid + withHoldingAmount
+				? 'partial'
+				: 'completed'
+
+			const cashAdancePaymentResult = await this.updateCashAdvancePayments(
+				result,
+				dailySales,
+				withHoldingAmount,
+				principalAmount,
+				factoringFees,
+				remainingPrincipal,
+				remainingTotalBalance,
+				status
+			)
+
+			await this.updateAmortizationSchedule(withHoldingAmount, factoringFees, result, status)
+
+			await this.updateCashAdvanceBalance(
+				result,
+				factoringFees,
+				principalAmount,
+				withHoldingAmount,
+				remainingPrincipal
+			)
+
+			return { cashAdancePaymentResult, withHoldingAmount }
 		} catch (DBError) {
 			throw new Error(DBError)
 		}
