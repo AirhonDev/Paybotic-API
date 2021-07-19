@@ -68,7 +68,7 @@ export default class SettlementService {
 		let cashAdancePaymentResult
 		try {
 			const condition = {
-				settlement_date: moment().add(2, 'days').format('YYYY-MM-DD'),
+				settlement_date: moment().format('YYYY-MM-DD'),
 			}
 
 			results = await this._amortizationScheduleRepository.findManyByOneCondition(
