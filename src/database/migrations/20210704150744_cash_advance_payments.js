@@ -20,6 +20,7 @@ exports.up = function (knex) {
     t.decimal('factoring_fees', 8, 2)
     t.decimal('remaining_principal', 8, 2)
     t.decimal('remaining_total_balance', 8, 2)
+    t.enu('status', ['pending', 'completed', 'partial', 'missed']).index()
     t.timestamps(['created_at', 'updated_at'], [knex.fn.now(), knex.fn.now()])
     t.dateTime('date_archived')
     t.boolean('archived').defaultTo(false)

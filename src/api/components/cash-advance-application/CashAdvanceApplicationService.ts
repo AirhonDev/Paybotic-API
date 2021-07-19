@@ -190,16 +190,21 @@ export default class CashAdvanceApplicationService {
 				params.cashAdvanceApplicationId,
 			)
 
-			const exisiting = await this._amortizationScheduleRepository.findOneByCondition({
-				cash_advance_application_id: params.cashAdvanceApplicationId
-			})
+			const exisiting = await this._amortizationScheduleRepository.findOneByCondition(
+				{
+					cash_advance_application_id: params.cashAdvanceApplicationId,
+				},
+			)
 
 			if (!exisiting) {
 				if (cashAdvanceApplicationResult.status == 'approved') {
 					const startDate = moment(cashAdvanceApplicationResult.start_date)
 					const endDate = moment(cashAdvanceApplicationResult.end_date)
 
-					const inBetweenDays = await this.getDaysBetweenDates(startDate, endDate)
+					const inBetweenDays = await this.getDaysBetweenDates(
+						startDate,
+						endDate,
+					)
 
 					const numberOfDays = inBetweenDays.length
 
@@ -274,7 +279,6 @@ export default class CashAdvanceApplicationService {
 					)
 				}
 			}
-
 		} catch (DBError) {
 			throw new Error(DBError)
 		}

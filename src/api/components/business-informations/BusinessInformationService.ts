@@ -26,16 +26,16 @@ export default class BusinessInformationService {
 			const businessInformationPayload = {
 				...businessInfo,
 				updatedAt: new Date(Date.now()),
-            }
-            const conditionPayload = {
-                uuid: condition.businessInformationId
-            }
-            businessInformationResult = await this._businessInformationRepository.updateOneByCondition(
-                conditionPayload,
+			}
+			const conditionPayload = {
+				uuid: condition.businessInformationId,
+			}
+			businessInformationResult = await this._businessInformationRepository.updateOneByCondition(
+				conditionPayload,
 				businessInformationPayload,
 			)
 
-            console.log(condition.businessInformationId)
+			console.log(condition.businessInformationId)
 			console.log(businessInformationResult)
 
 			const businessInformationData: IBusinessInformation = {

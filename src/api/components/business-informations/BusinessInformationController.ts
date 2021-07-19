@@ -10,14 +10,14 @@ export class Controller {
 		res: Response,
 		next: NextFunction,
 	): Promise<Response | void> {
-        const METHOD = '[updateBusinessInformation]'
+		const METHOD = '[updateBusinessInformation]'
 
 		log.info(`${TAG} ${METHOD}`)
 
 		const { BusinessInformationService } = req.container.cradle
 		let updatedBusinessInfo
 		try {
-            console.log(req.params)
+			console.log(req.params)
 			updatedBusinessInfo = await BusinessInformationService.updateBusinessInfo(
 				req.params,
 				req.body,

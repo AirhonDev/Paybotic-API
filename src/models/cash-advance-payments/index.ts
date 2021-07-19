@@ -3,6 +3,7 @@ export interface ICashAdvancePayment {
 	amortizationScheduleId: number
 	merchantId: number
 	dailySales: number
+	status: string
 	withHoldingAmount: number
 	principalAmount: number
 	factoringFees: number

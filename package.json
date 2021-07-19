@@ -65,6 +65,8 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-openapi-validator": "^3.16.6",
+    "file-url": "^4.0.0",
+    "get-base-url": "^2.2.0",
     "helmet": "^4.4.1",
     "js-yaml": "^3.14.0",
     "json-refs": "^3.0.15",
@@ -73,12 +75,14 @@
     "module-alias": "^2.2.2",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
+    "node-cron": "^3.0.0",
     "pino": "^6.11.2",
     "sqlite3": "^5.0.2",
     "swagger-ui-express": "^4.1.4",
     "tslib": "~2.1.0",
-    "yamljs": "^0.3.0",
-    "node-cron": "^3.0.0"
+    "xlsx": "^0.17.0",
+    "xlsx-import": "^2.3.5",
+    "yamljs": "^0.3.0"
   },
   "volta": {
     "node": "14.7.0"

@@ -29,7 +29,7 @@ export default class SilaMoneyApiService {
 		try {
 			result = await axios(request)
 		} catch (APIError) {
-			throw new Error(APIError)
+			throw new Error(APIError) 
 		}
 		const payload = {
 			...merchantEntityPayload,
@@ -78,6 +78,52 @@ export default class SilaMoneyApiService {
 			data: parameters,
 		}
 
+		let result: AxiosResponse
+		try {
+			result = await axios(request)
+		} catch (APIError) {
+			throw new Error(APIError)
+		}
+
+		console.log(result.data)
+	}
+
+	public async issueSilatoken(parameters: any)
+	{
+		const METHOD = '[issueSilatoken]'
+		log.info(`${TAG} ${METHOD}`)
+		console.log(`${SILA_MONEY_API_HOST}/transactions/` + parameters.handle + '/issue')
+		const request: AxiosRequestConfig = {
+			method: 'POST',
+			url: `${SILA_MONEY_API_HOST}/transactions/` + parameters.handle + '/issue',
+			headers: {
+				'content-type': 'application/json',
+			},
+			data: parameters,
+		}
+		let result: AxiosResponse
+		try {
+			result = await axios(request)
+		} catch (APIError) {
+			throw new Error(APIError)
+		}
+
+		console.log(result.data)
+	}
+
+	public async transferToBank(parameters: any)
+	{
+		const METHOD = '[transferToBank]'
+		log.info(`${TAG} ${METHOD}`)
+		console.log(`${SILA_MONEY_API_HOST}/transactions/` + parameters.handle + '/transfer')
+		const request: AxiosRequestConfig = {
+			method: 'POST',
+			url: `${SILA_MONEY_API_HOST}/transactions/` + parameters.handle + '/transfer',
+			headers: {
+				'content-type': 'application/json',
+			},
+			data: parameters,
+		}
 		let result: AxiosResponse
 		try {
 			result = await axios(request)

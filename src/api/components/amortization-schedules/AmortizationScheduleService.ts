@@ -6,23 +6,30 @@ const {
 import log from '@logger'
 import * as moment from 'moment'
 import { some, transform, map } from 'lodash'
+import { resolve } from 'path'
+import { pathToFileURL } from 'url'
+import getBaseUrl from 'get-base-url'
 
 import { getOrderByQuery } from '@utilities/RepositoryQueryUtil'
 import CashAdvancePaymentsRepository from '@components/cash-advance-payments/CashAdvancePaymentsRepository'
 import AmortizationScheduleRepository from '@components/amortization-schedules/AmortizationScheduleRepository'
+import ExportToExcelService from '@services/ExportToExcelService'
 
 const TAG = '[AmortizationScheduleService]'
 
 export default class AmortizationScheduleService {
 	private readonly _amortizationScheduleRepository: AmortizationScheduleRepository
 	private readonly _cashAdvancePaymentsRepository: CashAdvancePaymentsRepository
+	private readonly _exportToExcelService: ExportToExcelService
 
 	constructor({
 		AmortizationScheduleRepository,
 		CashAdvancePaymentsRepository,
+		ExportToExcelService,
 	}) {
 		this._amortizationScheduleRepository = AmortizationScheduleRepository
 		this._cashAdvancePaymentsRepository = CashAdvancePaymentsRepository
+		this._exportToExcelService = ExportToExcelService
 	}
 
 	public async retrieveListOfAmortizationSchedules(condition): Promise<any> {
@@ -133,5 +140,43 @@ export default class AmortizationScheduleService {
 		}
 
 		return cashAdvanceApplicationResult
+	}
+
+	public async exportAmortizationSchedule(condition, req): Promise<any> {
+		let amortizationScheduleResult
+		try {
+			amortizationScheduleResult = await this.retrieveListOfAmortizationSchedules(
+				condition,
+			)
+
+			const workSheetColumnNames = [
+				'Cash Advance Principal',
+				'Factoring Fees',
+				'Total Daily Repayment',
+				'Remaining Principal',
+				'Remaining Total Balance',
+				'Daily Sales Receipts',
+				'Withholding',
+				'Principal',
+				'Factoring Fees',
+				'Remaining Principal',
+				'Remaining Total Balance',
+			]
+			const workSheetName = 'Amortization Schedule'
+			const fileName = 'amortization-schedule' + moment().unix() + '.xlsx'
+			const filePath = './public/amortization-exports/' + fileName
+
+			this._exportToExcelService.exportAmortizationSchedule(
+				amortizationScheduleResult.data,
+				workSheetColumnNames,
+				workSheetName,
+				filePath,
+			)
+
+			const baseUrl = req.protocol + '://' + req.get('host')
+			return baseUrl + '/amortization-exports/' + fileName
+		} catch (DBError) {
+			throw new Error(DBError)
+		}
 	}
 }
