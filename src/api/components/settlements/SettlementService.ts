@@ -371,22 +371,32 @@ export default class SettlementService {
 		let withHoldingAmount
 		let remainingPrincipal
 		let remainingTotalBalance
+		let factoringFees
+		let paybackAmount
+		let principalAmount
 		try {
 			const factorRate = cashAdvance.factor_rate.toString().substring(1, 4)
 
 			withHoldingAmount = dailySales
 			if (dailySales > result.total_daily_repayment) {
-
 				const remainder = dailySales - result.total_daily_repayment
 				withHoldingAmount = dailySales - remainder
+				factoringFees = result.factoring_fees
+				paybackAmount =
+					cashAdvance.principal_amount +
+					cashAdvance.principal_amount * Number(factorRate)
+				principalAmount = withHoldingAmount - factoringFees
+				remainingPrincipal = cashAdvance.principal_amount - principalAmount
+				remainingTotalBalance = paybackAmount - withHoldingAmount
+			} else {
+				factoringFees = withHoldingAmount * Number(factorRate)
+				paybackAmount =
+					cashAdvance.principal_amount +
+					cashAdvance.principal_amount * Number(factorRate)
+				principalAmount = withHoldingAmount - factoringFees
+				remainingPrincipal = cashAdvance.principal_amount - principalAmount
+				remainingTotalBalance = paybackAmount - withHoldingAmount
 			}
-			const factoringFees = withHoldingAmount * Number(factorRate)
-			const paybackAmount =
-				cashAdvance.principal_amount +
-				cashAdvance.principal_amount * Number(factorRate)
-			const principalAmount = withHoldingAmount - factoringFees
-			remainingPrincipal = cashAdvance.principal_amount - principalAmount
-			remainingTotalBalance = paybackAmount - withHoldingAmount
 
 			if (lastPayment) {
 				remainingPrincipal =
